@@ -3,7 +3,7 @@
     "name": "#begin",
     "init": {
       "decl": ["x", "y", "op"],
-      "set": {"x": 43, "y": 250, "op": "+"}
+      "set": {"x": 43, "y": 250, "op": "xor"}
     },
     "print": 43250209,
     "next": {
@@ -23,7 +23,13 @@
             "if": {
               "condition": "op == '*'",
               "then": {"goto": "Times"},
-              "else": {"goto": "Divide"}
+              "else": {
+                "if": {
+                  "condition": "op == '/'",
+                  "then": {"goto": "Divide"},
+                  "else": {"goto": "Xor"}
+                }
+              }
             }
           }
         }
@@ -48,6 +54,11 @@
   {
     "name": "Divide",
     "set": {"result": {"expr": "x / y"}},
+    "goto": "#end"
+  },
+  {
+    "name": "Xor",
+    "set": {"result": {"expr": "x ^ y"}},
     "goto": "#end"
   },
   {
