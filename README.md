@@ -4,4 +4,4 @@ BaoScript is a flow-oriented, JavaScript-based language designed for front-end i
 
 ## Example
 ### Code Editor
-<https://gongruya.github.io/bao/example.html>
+<http://www.baoscript.org/example.html>
