@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <title>BaoScript Example</title>
+</head>
+<body>
+<div class="container">
+<section class="mb-3">
+  <textarea class="form-control mb-3" id="code" rows="20"></textarea>
+  <button id="run" class="btn btn-primary">Run Code</button>
+</section>
+
+<section class="mb-3">
+  <h2>Result</h2>
+  <div class="row mb-3">
+    <div class="input-group col-lg-6 col-md-8 col-12">
+      <input type="text" class="form-control" data-bao-target="x">
+      <select class="form-control" data-bao-target="op">
+        <option>+</option>
+        <option>-</option>
+        <option>*</option>
+        <option>/</option>
+      </select>
+      <input type="text" class="form-control" data-bao-target="y">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" data-bao-action="calc">=</button>
+      </div>
+      <input type="text" class="form-control" data-bao-target="result" disabled="true">
+    </div>
+  </div>
+  <button data-bao-action="sync" class="btn btn-primary">Sync</button>
+</section>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script> 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<script src="js/jsep.min.js"></script>
+<script src="js/jsep-eval.js"></script>
+
+<script src="bao.js"></script>
+<script>
+  $(function() {
+    $('#code').load('example.bao');
+    $('#run').click(function() {
+      const bao = new Bao();
+      bao.parseString($('#code').val());
+      bao.run();
+    });
+  });
+</script>
+  </body>
+</html>
