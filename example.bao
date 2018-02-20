@@ -5,7 +5,7 @@
       "decl": ["x", "y", "op"],
       "set": {"x": 43, "y": 250, "op": "+"}
     },
-    "print": 43250,
+    "print": 43250209,
     "next": {
       "calc": {"goto": "Calculate"}
     }

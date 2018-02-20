@@ -3,8 +3,15 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="CodeMirror/codemirror.min.css">
+  <link rel="stylesheet" href="CodeMirror/addon/fold/foldgutter.min.css">
+  <link rel="stylesheet" href="CodeMirror/addon/lint/lint.min.css">
 
   <title>BaoScript Example</title>
+  <style>
+    .CodeMirror {height:500px;border: 1px solid #ddd;margin-bottom:2rem;}
+  </style>
+
 </head>
 <body>
 <div class="container">
@@ -31,7 +38,9 @@
       <input type="text" class="form-control" data-bao-target="result" disabled="true">
     </div>
   </div>
+  <!--
   <button data-bao-action="sync" class="btn btn-primary">Sync</button>
+  -->
 </section>
 
 </div>
@@ -42,16 +51,42 @@
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
+
+<script src="CodeMirror/codemirror.min.js"></script>
+<script src="CodeMirror/mode/javascript/javascript.min.js"></script>
+<script src="CodeMirror/addon/edit/matchbrackets.min.js"></script>
+<script src="CodeMirror/addon/edit/closebrackets.min.js"></script>
+<script src="CodeMirror/addon/fold/foldcode.min.js"></script>
+<script src="CodeMirror/addon/fold/foldgutter.min.js"></script>
+<script src="CodeMirror/addon/fold/brace-fold.min.js"></script>
+<script src="CodeMirror/addon/lint/lint.min.js"></script>
+<script src="CodeMirror/addon/lint/json-lint.min.js"></script>
+<script src="js/jsonlint.js"></script>
+<script>
+const editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+  lineNumbers: true,
+  matchBrackets: true,
+  autoCloseBrackets: true,
+  mode: "application/json",
+  lineWrapping: true,
+  foldGutter: true,
+  lint: true,
+  gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"]
+});
+</script>
+
 <script src="js/jsep.min.js"></script>
 <script src="js/jsep-eval.js"></script>
 
 <script src="bao.js"></script>
 <script>
   $(function() {
-    $('#code').load('example.bao');
+    $.get('example.bao', function(data) {
+      editor.getDoc().setValue(data);
+    });
     $('#run').click(function() {
       const bao = new Bao();
-      bao.parseString($('#code').val());
+      bao.parseString(editor.getValue());
       bao.run();
     });
   });
