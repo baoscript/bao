@@ -1,0 +1,22 @@
+<div class="row mb-2">
+  <div class="input-group col-lg-6 col-md-8 col-12">
+    <input type="text" class="form-control" data-bao-target="x">
+    <select class="form-control" data-bao-target="op">
+      <option>xor</option>
+      <option>+</option>
+      <option>-</option>
+      <option>*</option>
+      <option>/</option>
+    </select>
+    <input type="text" class="form-control" data-bao-target="y">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" data-bao-action="calc">=</button>
+    </div>
+  </div>
+</div>
+<div class="row mb-2">
+  <input type="text" class="form-control" data-bao-target="result" disabled="true">
+</div>
+<div class="row mb-2">
+  <button data-bao-action="quit" class="btn btn-primary">Quit Flow</button>
+</div>

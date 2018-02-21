@@ -1,0 +1,6 @@
+#code-area{min-height:500px;height:100vh;display:flex;flex-direction:column;}
+#code-area>.tab-content{flex:1;}
+#code-area>.tab-content>.tab-pane.show{height:100%;display:flex;flex-direction:column;}
+.CodeMirror{flex:1;border:1px solid #dee2e6;border-top:0;}
+.result-area{display:none;background:#f5fff2;}
+button#run{border-radius:0;}
