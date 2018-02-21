@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="CodeMirror/codemirror.min.css">
+  <link rel="stylesheet" href="CodeMirror/addon/fold/foldgutter.min.css">
+  <link rel="stylesheet" href="CodeMirror/addon/lint/lint.min.css">
+  <link rel="stylesheet" href="style.css">
+
+  <title>BaoScript Example</title>
+
+</head>
+<body>
+<div class="container-fluid p-0" id="code-area">
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="bao-tab" data-toggle="tab" href="#bao" role="tab" aria-controls="bao" aria-selected="true">Bao</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="html-tab" data-toggle="tab" href="#html" role="tab" aria-controls="html" aria-selected="false">HTML</a>
+    </li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane show active" id="bao" role="tabpanel" aria-labelledby="bao-tab">
+      <textarea class="form-control" id="bao-code" rows="20"></textarea>
+    </div>
+    <div class="tab-pane" id="html" role="tabpanel" aria-labelledby="html-tab">
+      <textarea class="form-control" id="html-code" rows="20"></textarea>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <button id="run" class="btn btn-primary btn-block">Run Code</button>
+  </div>
+</div>
+<div class="container-fluid pt-3 result-area">
+  <div class="container"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<!-- CodeMirror -->
+<script src="CodeMirror/codemirror.min.js"></script>
+<script src="CodeMirror/mode/javascript/javascript.min.js"></script>
+<script src="CodeMirror/mode/xml/xml.min.js"></script>
+<script src="CodeMirror/addon/edit/matchbrackets.min.js"></script>
+<script src="CodeMirror/addon/edit/matchtags.min.js"></script>
+<script src="CodeMirror/addon/edit/closebrackets.min.js"></script>
+<script src="CodeMirror/addon/edit/closetag.min.js"></script>
+<script src="CodeMirror/addon/fold/foldcode.min.js"></script>
+<script src="CodeMirror/addon/fold/foldgutter.min.js"></script>
+<script src="CodeMirror/addon/fold/brace-fold.min.js"></script>
+<script src="CodeMirror/addon/fold/xml-fold.min.js"></script>
+<script src="CodeMirror/addon/lint/lint.min.js"></script>
+<script src="CodeMirror/addon/lint/json-lint.min.js"></script>
+<script src="third_party/jsonlint.js"></script>
+
+<!-- bao.js -->
+<script src="../src/bao.js"></script>
+<script>
+  $(function() {
+    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
+        lineNumbers: true,
+        mode: "text/html",
+        matchTags: true,
+        autoCloseTags: true,
+        lineWrapping: true,
+        foldGutter: true,
+        lint: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"]
+      });
+    const baoEditor = CodeMirror.fromTextArea(document.getElementById('bao-code'), {
+        lineNumbers: true,
+        matchBrackets: true,
+        autoCloseBrackets: true,
+        mode: "application/json",
+        lineWrapping: true,
+        foldGutter: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+      });
+    $.get('examples/calc.bao', function(data) {
+      baoEditor.getDoc().setValue(data);
+    });
+    $.get('examples/calc.html', function(data) {
+      htmlEditor.getDoc().setValue(data);
+    });
+    $('#run').click(function() {
+      // Load HTML
+      $('.result-area div').html(htmlEditor.getValue());
+      $('.result-area').show();
+      $('html,body').animate({scrollTop: $('.result-area').offset().top}, 'slow');
+      // Run bao
+      const bao = new Bao();
+      bao.parseString(baoEditor.getValue());
+      bao.run();
+    });
+  });
+</script>
+  </body>
+</html>
