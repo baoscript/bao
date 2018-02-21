@@ -14,7 +14,7 @@
 </head>
 <body>
 <div class="container-fluid p-0" id="code-area">
-  <ul class="nav nav-tabs" role="tablist">
+  <ul class="nav nav-tabs" id="code-area-tabs" role="tablist">
     <li class="navbar-brand mx-4">bao.js</li>
     <li class="nav-item">
       <a class="nav-link active" id="bao-tab" data-toggle="tab" href="#bao" role="tab" aria-controls="bao" aria-selected="true">Bao</a>
@@ -86,8 +86,24 @@
         foldGutter: true,
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
       });
+
+    $('#code-area-tabs>li.nav-item>a[href="#bao"]').click(baoEditor, function(e) {
+      e.preventDefault();
+      $(this).tab('show');
+      e.data.refresh();
+      e.data.focus();
+    });
+
+    $('#code-area-tabs>li.nav-item>a[href="#html"]').click(htmlEditor, function(e) {
+      e.preventDefault();
+      $(this).tab('show');
+      e.data.refresh();
+      e.data.focus();
+    });
+
     $.get('examples/calc.bao', function(data) {
       baoEditor.getDoc().setValue(data);
+      baoEditor.focus();
     });
     $.get('examples/calc.html', function(data) {
       htmlEditor.getDoc().setValue(data);
