@@ -23,10 +23,10 @@
   </ul>
   <div class="tab-content">
     <div class="tab-pane show active" id="bao" role="tabpanel" aria-labelledby="bao-tab">
-      <textarea class="form-control" id="bao-code" rows="20"></textarea>
+      <textarea class="form-control" id="bao-code"></textarea>
     </div>
     <div class="tab-pane" id="html" role="tabpanel" aria-labelledby="html-tab">
-      <textarea class="form-control" id="html-code" rows="20"></textarea>
+      <textarea class="form-control" id="html-code"></textarea>
     </div>
   </div>
 
@@ -62,21 +62,21 @@
 <script src="../src/bao.js"></script>
 <script>
   $(function() {
-    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
+    const baoEditor = CodeMirror.fromTextArea(document.getElementById('bao-code'), {
+        mode: "application/json",
         lineNumbers: true,
-        mode: "text/html",
-        matchTags: true,
-        autoCloseTags: true,
+        matchBrackets: true,
+        autoCloseBrackets: true,
         lineWrapping: true,
         foldGutter: true,
         lint: true,
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"]
       });
-    const baoEditor = CodeMirror.fromTextArea(document.getElementById('bao-code'), {
+    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
+        mode: "text/html",
         lineNumbers: true,
-        matchBrackets: true,
-        autoCloseBrackets: true,
-        mode: "application/json",
+        matchTags: true,
+        autoCloseTags: true,
         lineWrapping: true,
         foldGutter: true,
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
