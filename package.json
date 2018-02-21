@@ -1,0 +1,26 @@
+{
+  "name": "baojs",
+  "version": "1.0.0",
+  "description": "BaoScript",
+  "main": "src/bao.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gongruya/bao.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "flow"
+  ],
+  "author": "gongruya",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gongruya/bao/issues"
+  },
+  "homepage": "http://www.baoscript.org"
+}

@@ -6,8 +6,13 @@
       "set": {"x": 43, "y": 250, "op": "xor"}
     },
     "print": 43250209,
+    "goto": "Wait"
+  },
+  {
+    "name": "Wait",
     "next": {
-      "calc": {"goto": "Calculate"}
+      "calc": {"goto": "Calculate"},
+      "quit": {"goto": "#end"}
     }
   },
   {
@@ -39,27 +44,27 @@
   {
     "name": "Plus",
     "set": {"result": {"expr": "x + y"}},
-    "goto": "#end"
+    "goto": "Wait"
   },
   {
     "name": "Minus",
     "set": {"result": {"expr": "x - y"}},
-    "goto": "#end"
+    "goto": "Wait"
   },
   {
     "name": "Times",
     "set": {"result": {"expr": "x * y"}},
-    "goto": "#end"
+    "goto": "Wait"
   },
   {
     "name": "Divide",
     "set": {"result": {"expr": "x / y"}},
-    "goto": "#end"
+    "goto": "Wait"
   },
   {
     "name": "Xor",
     "set": {"result": {"expr": "x ^ y"}},
-    "goto": "#end"
+    "goto": "Wait"
   },
   {
     "name": "#end",
