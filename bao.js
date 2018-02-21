@@ -1,4 +1,10 @@
-// TODO: re-organize code dependencies.
+const evalWithContext = function(context, expr) {
+  return function() {
+    with (this) {
+      return eval(expr);
+    }
+  }.call(context);
+}
 
 class Variable {
   constructor(name) {
@@ -9,9 +15,8 @@ class Variable {
 
   setVal(val, context) {
     // We only eval {'expr': ''} here. We treat it as literal otherwise.
-    if (typeof val === 'object') {
-      const expr = new Expression(context, val['expr']);
-      this.val_ = expr.eval();
+    if (typeof val === 'object' && val['expr']) {
+      this.val_ = evalWithContext(context.getVarContext(), val['expr']);
     } else {
       this.val_ = val;
     }
@@ -91,16 +96,6 @@ class Context {
   }
 }
 
-class Expression {
-  constructor(context, ast) {
-    this.context_ = context;
-    this.ast_ = jsep(ast);
-  }
-  eval() {
-    return evaluate(this.ast_, this.context_.getVarContext());
-  }
-}
-
 class BaoStep {
   constructor(context, name = '') {
     // Context
@@ -115,7 +110,7 @@ class BaoStep {
     // Init while entering, another step.
     this.init_ = null;
 
-    this.expr_ = null;
+    this.condition_ = null;
     this.then_ = null;
     this.else_ = null;
 
@@ -186,7 +181,7 @@ class BaoStep {
 
       // if clause.
       if (data['if']) {
-        this.expr_ = new Expression(this.context_, data['if']['condition']);
+        this.condition_ = data['if']['condition'];
         this.then_ = new BaoStep(this.context_);
         this.then_.parseJsonData(data['if']['then']);
         if (data['if']['else']) {
@@ -219,8 +214,8 @@ class BaoStep {
     if (this.print_ != undefined) {
       console.log(this.print_);
     }
-    if (this.expr_) {
-      if (this.expr_.eval()) {
+    if (this.condition_) {
+      if (evalWithContext(this.context_.getVarContext(), this.condition_)) {
         return this.then_.run();
       }
       if (this.else_) {
