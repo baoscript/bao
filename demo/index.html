@@ -87,14 +87,14 @@
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
       });
 
-    $('#code-area-tabs li.nav-item a[href="#bao"]').click(baoEditor, function(e) {
+    $('#code-area-tabs>li.nav-item>a[href="#bao"]').click(baoEditor, function(e) {
       e.preventDefault();
       $(this).tab('show');
       e.data.refresh();
       e.data.focus();
     });
 
-    $('#code-area-tabs li.nav-item a[href="#html"]').click(htmlEditor, function(e) {
+    $('#code-area-tabs>li.nav-item>a[href="#html"]').click(htmlEditor, function(e) {
       e.preventDefault();
       $(this).tab('show');
       e.data.refresh();
