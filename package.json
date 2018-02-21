@@ -2,7 +2,7 @@
   "name": "baojs",
   "version": "1.0.0",
   "description": "BaoScript",
-  "main": "bao.js",
+  "main": "src/bao.js",
   "directories": {
     "example": "example"
   },
