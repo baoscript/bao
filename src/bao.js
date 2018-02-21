@@ -39,7 +39,7 @@ class Variable {
   /** 
    * Update the value of corresponding DOM element with this variable.
    * @private
-  */
+   */
   updateDomElements_() {
     const el = $('[data-bao-target="' + this.name_ + '"]');
     el.val(this.val_);
@@ -153,6 +153,9 @@ class BaoStep {
     // Init while entering, another step.
     this.init_ = null;
 
+    // Next steps.
+    this.nextSteps_ = new Map();
+
     this.condition_ = null;
     this.then_ = null;
     this.else_ = null;
@@ -163,14 +166,20 @@ class BaoStep {
     // Setters of this step
     this.set_ = new Map();
   }
-/*
-  registerButton() {
-    $('button[data-bao-action="sync"]').click(this.context_, function(e) {
-      const context = e.data;
+
+  /**
+   * Register click handler for next steps.
+   * @param {string} action 
+   * @param {BaoStep} next 
+   */
+  registerButton(action, next) {
+    $('[data-bao-action="' + action + '"]').click([this.context_, next], function(e) {
+      const context = e.data[0];
       context.sync();
+      const next = e.data[1];
+      next.run();
     });
   }
-  */
   
   /** Get step name. */
   getName() {
@@ -218,12 +227,7 @@ class BaoStep {
         for (const action in data['next']) {
           const next = new BaoStep(this.context_);
           next.parseJsonData(data['next'][action]);
-          $('button[data-bao-action="' + action + '"]').click([this.context_, next], function(e) {
-            const context = e.data[0];
-            context.sync();
-            const next = e.data[1];
-            next.run();
-          });
+          this.nextSteps_.set(action, next);
         }
       }
 
@@ -252,6 +256,9 @@ class BaoStep {
 
   /** Run the step. */
   run() {
+    // Remove all registered click handlers first.
+    $('[data-bao-action]').off('click');
+
     // Run init
     if (this.name_) {
       console.log('Current step: ' + this.name_);
@@ -266,6 +273,12 @@ class BaoStep {
     if (this.print_ != undefined) {
       console.log(this.print_);
     }
+
+    // Register click handler.
+    for (const [action, next] of this.nextSteps_) {
+      this.registerButton(action, next);
+    }
+
     if (this.condition_) {
       if (evalWithContext(this.context_.getVarContext(), this.condition_)) {
         return this.then_.run();
