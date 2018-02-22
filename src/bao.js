@@ -1,12 +1,14 @@
+const $ = require('jquery');
+
 const evalWithContext = function(context, expr) {
-  return function() {
-    with (this) {
-      return eval(expr);
-    }
-  }.call(context);
-}
+  return (new Function( "with(this){return " + expr + "}")).call(context);
+};
 
 class Variable {
+  /**
+   * Create a variable with name.
+   * @param {string} name 
+   */
   constructor(name) {
     this.name_ = name;
     this.val_ = null;
@@ -314,5 +316,4 @@ class Bao {
   }
 }
 
-// Export Bao
-window['Bao'] = Bao;
+module.exports = Bao;
