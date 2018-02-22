@@ -1,12 +1,19 @@
+const $ = require('jquery');
+
+/**
+ * Eval an expression with context.
+ * @param {object} context 
+ * @param {string} expr 
+ */
 const evalWithContext = function(context, expr) {
-  return function() {
-    with (this) {
-      return eval(expr);
-    }
-  }.call(context);
-}
+  return (new Function("with(this){return " + expr + "}")).call(context);
+};
 
 class Variable {
+  /**
+   * Create a variable with name.
+   * @param {string} name 
+   */
   constructor(name) {
     this.name_ = name;
     this.val_ = null;
@@ -173,6 +180,7 @@ class BaoStep {
    * @param {BaoStep} next 
    */
   registerButton(action, next) {
+    $('[data-bao-action="' + action + '"]').prop('disabled', false);
     $('[data-bao-action="' + action + '"]').click([this.context_, next], function(e) {
       const context = e.data[0];
       context.sync();
@@ -257,13 +265,13 @@ class BaoStep {
   /** Run the step. */
   run() {
     // Remove all registered click handlers first.
-    $('[data-bao-action]').off('click');
+    $('[data-bao-action]').off('click').prop('disabled', true);
 
-    // Run init
     if (this.name_) {
       console.log('Current step: ' + this.name_);
     }
 
+    // Run init
     if (this.init_) {
       this.init_.run();
     }
@@ -313,5 +321,4 @@ class Bao {
   }
 }
 
-// Export Bao
-window['Bao'] = Bao;
+module.exports = Bao;
