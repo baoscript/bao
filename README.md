@@ -1,7 +1,7 @@
 # bao.js aka BaoScript
 
-BaoScript is a flow-oriented, JavaScript-based language designed for front-end interaction.
+BaoScript is a flow-oriented, JSON-based language designed for front-end interaction. The bao.js is the parser for BaoScript.
 
 ## Example
 ### Code Editor
-<http://www.baoscript.org/demo/>
+<http://baoscript.org/demo/>
