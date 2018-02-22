@@ -173,6 +173,7 @@ class BaoStep {
    * @param {BaoStep} next 
    */
   registerButton(action, next) {
+    $('[data-bao-action="' + action + '"]').prop('disabled', false);
     $('[data-bao-action="' + action + '"]').click([this.context_, next], function(e) {
       const context = e.data[0];
       context.sync();
@@ -257,13 +258,13 @@ class BaoStep {
   /** Run the step. */
   run() {
     // Remove all registered click handlers first.
-    $('[data-bao-action]').off('click');
+    $('[data-bao-action]').off('click').prop('disabled', true);
 
-    // Run init
     if (this.name_) {
       console.log('Current step: ' + this.name_);
     }
 
+    // Run init
     if (this.init_) {
       this.init_.run();
     }
