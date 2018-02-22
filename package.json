@@ -4,7 +4,7 @@
   "description": "BaoScript",
   "main": "./src/bao.js",
   "scripts": {
-    "build:dev": "webpack -d",
+    "build:dev": "webpack",
     "build:prod": "NODE_ENV=production webpack -p",
     "build": "npm run build:dev && npm run build:prod"
   },
