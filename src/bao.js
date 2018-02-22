@@ -1,7 +1,12 @@
 const $ = require('jquery');
 
+/**
+ * Eval an expression with context.
+ * @param {object} context 
+ * @param {string} expr 
+ */
 const evalWithContext = function(context, expr) {
-  return (new Function( "with(this){return " + expr + "}")).call(context);
+  return (new Function("with(this){return " + expr + "}")).call(context);
 };
 
 class Variable {
