@@ -165,6 +165,61 @@ class IfStep extends BaoStep {
   }
 }
 
+/** A step that contains switch clause. */
+class SwitchStep extends BaoStep {
+  constructor(context, name) {
+    super(context, name);
+
+    this.type_ = 'SwitchStep';
+    this.expr_ = undefined;
+    this.cases_ = [];
+    this.elseStep_ = undefined;
+  }
+
+  /**
+   * Parse a SwitchStep.
+   * @param {object} data 
+   * @override
+   */
+  parseJsonData(data) {
+    super.parseJsonData(data);
+    if (!data['switch'] || !data['switch']['expr'] || !data['switch']['cases']) {
+      throw 'Invalid switch step';
+    }
+    this.expr_ = data['switch']['expr'];
+    for (const clause of data['switch']['cases']) {
+      const expr = clause.expr;
+      if (!expr) throw 'Invalid case clause inside switch step';
+      this.cases_.push([expr, BaoStep.create(this.context_, clause)]);
+    }
+    
+    // Optional else clause.
+    if (data['switch']['else']) {
+      this.elseStep_ = BaoStep.create(this.context_, data['switch']['else']);
+    }
+  }
+
+  /**
+   * Switch step implementation.
+   * @override
+   */
+  run() {
+    super.run();
+    if (!this.expr_ || !this.cases_) {
+      throw 'Invalid if step';
+    }
+    const expr = context.evalWithContext(this.context_, this.expr_);
+    for (const [valexpr, clause] of this.cases_) {
+      const val = context.evalWithContext(this.context_, valexpr);
+      if (expr == val) return clause.run();
+    }
+    if (this.elseStep_) {
+      return this.elseStep_.run();
+    }
+    return null;
+  }
+}
+
 /** A step that contains goto clause. */
 class GotoStep extends BaoStep {
   constructor(context, name) {
