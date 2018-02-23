@@ -308,13 +308,14 @@ class ActionStep extends BaoStep {
    * @private
    */
   registerButton_(action, next) {
-    $('[data-bao-action="' + action + '"]').prop('disabled', false);
-    $('[data-bao-action="' + action + '"]').click([this.context_, next], function(e) {
-      const context = e.data[0];
-      context.sync();
-      const next = e.data[1];
-      next.run();
-    });
+    $('[data-bao-action="' + action + '"]')
+        .prop('disabled', false)
+        .click([this.context_, next], function(e) {
+          const context = e.data[0];
+          context.sync();
+          const next = e.data[1];
+          next.run();
+        });
   }
 }
 
