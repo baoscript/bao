@@ -77,7 +77,7 @@ class Context {
 
 
   /**
-   * Get the step with name.
+   * Get step by name.
    * @param {string} name 
    */
   getStep(name) {
