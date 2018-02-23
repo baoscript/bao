@@ -1,6 +1,6 @@
 const $ = require('jquery');
-const context = require('./context.js');
-const Context = context.Context;
+const baoContext = require('./context.js');
+const Context = baoContext.Context;
 
 /** A base class for a step abstraction in bao. */
 class BaoStep {
@@ -40,6 +40,11 @@ class BaoStep {
       const actionStep = new ActionStep(context);
       actionStep.parseJsonData(data);
       return actionStep;
+    }
+    if (data['switch']) {
+      const switchStep = new SwitchStep(context);
+      switchStep.parseJsonData(data);
+      return switchStep;
     }
     const step = new BaoStep(context);
     step.parseJsonData(data);
@@ -155,7 +160,7 @@ class IfStep extends BaoStep {
     if (!this.condition_ || !this.thenStep_) {
       throw 'Invalid if step';
     }
-    if (context.evalWithContext(this.context_, this.condition_)) {
+    if (baoContext.evalWithContext(this.context_, this.condition_)) {
       return this.thenStep_.run();
     }
     if (this.elseStep_) {
@@ -172,8 +177,8 @@ class SwitchStep extends BaoStep {
 
     this.type_ = 'SwitchStep';
     this.expr_ = undefined;
-    this.cases_ = [];
-    this.elseStep_ = undefined;
+    this.cases_ = new Map();
+    this.defaultStep_ = undefined;
   }
 
   /**
@@ -187,15 +192,13 @@ class SwitchStep extends BaoStep {
       throw 'Invalid switch step';
     }
     this.expr_ = data['switch']['expr'];
-    for (const clause of data['switch']['cases']) {
-      const expr = clause.expr;
-      if (!expr) throw 'Invalid case clause inside switch step';
-      this.cases_.push([expr, BaoStep.create(this.context_, clause)]);
+    for (const [val, clause] of data['switch']['cases']) {
+      this.cases_.set(val, BaoStep.create(this.context_, clause));
     }
-    
-    // Optional else clause.
-    if (data['switch']['else']) {
-      this.elseStep_ = BaoStep.create(this.context_, data['switch']['else']);
+
+    // Optional default clause.
+    if (data['switch']['default']) {
+      this.defaultStep_ = BaoStep.create(this.context_, data['switch']['default']);
     }
   }
 
@@ -206,15 +209,15 @@ class SwitchStep extends BaoStep {
   run() {
     super.run();
     if (!this.expr_ || !this.cases_) {
-      throw 'Invalid if step';
+      throw 'Invalid switch step';
     }
-    const expr = context.evalWithContext(this.context_, this.expr_);
-    for (const [valexpr, clause] of this.cases_) {
-      const val = context.evalWithContext(this.context_, valexpr);
-      if (expr == val) return clause.run();
+    const exprVal = baoContext.evalWithContext(this.context_, this.expr_);
+    const clause = this.cases_.get(exprVal);
+    if (clause) {
+      return clause.run();
     }
-    if (this.elseStep_) {
-      return this.elseStep_.run();
+    if (this.defaultStep_) {
+      return this.defaultStep_.run();
     }
     return null;
   }

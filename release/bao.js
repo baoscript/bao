@@ -425,8 +425,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var $ = __webpack_require__(0);
-var context = __webpack_require__(1);
-var Context = context.Context;
+var baoContext = __webpack_require__(1);
+var Context = baoContext.Context;
 
 /** A base class for a step abstraction in bao. */
 
@@ -601,6 +601,11 @@ var BaoStep = function () {
         actionStep.parseJsonData(data);
         return actionStep;
       }
+      if (data['switch']) {
+        var switchStep = new SwitchStep(context);
+        switchStep.parseJsonData(data);
+        return switchStep;
+      }
       var step = new BaoStep(context);
       step.parseJsonData(data);
       return step;
@@ -662,7 +667,7 @@ var IfStep = function (_BaoStep) {
       if (!this.condition_ || !this.thenStep_) {
         throw 'Invalid if step';
       }
-      if (context.evalWithContext(this.context_, this.condition_)) {
+      if (baoContext.evalWithContext(this.context_, this.condition_)) {
         return this.thenStep_.run();
       }
       if (this.elseStep_) {
@@ -675,21 +680,115 @@ var IfStep = function (_BaoStep) {
   return IfStep;
 }(BaoStep);
 
+/** A step that contains switch clause. */
+
+
+var SwitchStep = function (_BaoStep2) {
+  _inherits(SwitchStep, _BaoStep2);
+
+  function SwitchStep(context, name) {
+    _classCallCheck(this, SwitchStep);
+
+    var _this2 = _possibleConstructorReturn(this, (SwitchStep.__proto__ || Object.getPrototypeOf(SwitchStep)).call(this, context, name));
+
+    _this2.type_ = 'SwitchStep';
+    _this2.expr_ = undefined;
+    _this2.cases_ = new Map();
+    _this2.defaultStep_ = undefined;
+    return _this2;
+  }
+
+  /**
+   * Parse a SwitchStep.
+   * @param {object} data 
+   * @override
+   */
+
+
+  _createClass(SwitchStep, [{
+    key: 'parseJsonData',
+    value: function parseJsonData(data) {
+      _get(SwitchStep.prototype.__proto__ || Object.getPrototypeOf(SwitchStep.prototype), 'parseJsonData', this).call(this, data);
+      if (!data['switch'] || !data['switch']['expr'] || !data['switch']['cases']) {
+        throw 'Invalid switch step';
+      }
+      this.expr_ = data['switch']['expr'];
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = data['switch']['cases'][Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var _step3$value = _slicedToArray(_step3.value, 2),
+              val = _step3$value[0],
+              clause = _step3$value[1];
+
+          this.cases_.set(val, BaoStep.create(this.context_, clause));
+        }
+
+        // Optional default clause.
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
+      if (data['switch']['default']) {
+        this.defaultStep_ = BaoStep.create(this.context_, data['switch']['default']);
+      }
+    }
+
+    /**
+     * Switch step implementation.
+     * @override
+     */
+
+  }, {
+    key: 'run',
+    value: function run() {
+      _get(SwitchStep.prototype.__proto__ || Object.getPrototypeOf(SwitchStep.prototype), 'run', this).call(this);
+      if (!this.expr_ || !this.cases_) {
+        throw 'Invalid switch step';
+      }
+      var exprVal = baoContext.evalWithContext(this.context_, this.expr_);
+      var clause = this.cases_.get(exprVal);
+      if (clause) {
+        return clause.run();
+      }
+      if (this.defaultStep_) {
+        return this.defaultStep_.run();
+      }
+      return null;
+    }
+  }]);
+
+  return SwitchStep;
+}(BaoStep);
+
 /** A step that contains goto clause. */
 
 
-var GotoStep = function (_BaoStep2) {
-  _inherits(GotoStep, _BaoStep2);
+var GotoStep = function (_BaoStep3) {
+  _inherits(GotoStep, _BaoStep3);
 
   function GotoStep(context, name) {
     _classCallCheck(this, GotoStep);
 
-    var _this2 = _possibleConstructorReturn(this, (GotoStep.__proto__ || Object.getPrototypeOf(GotoStep)).call(this, context, name));
+    var _this3 = _possibleConstructorReturn(this, (GotoStep.__proto__ || Object.getPrototypeOf(GotoStep)).call(this, context, name));
 
-    _this2.type_ = 'GotoStep';
+    _this3.type_ = 'GotoStep';
     // The **name** of goto step.
-    _this2.goto_ = undefined;
-    return _this2;
+    _this3.goto_ = undefined;
+    return _this3;
   }
 
   /**
@@ -731,18 +830,18 @@ var GotoStep = function (_BaoStep2) {
 /** A step that waits on UI click actions. */
 
 
-var ActionStep = function (_BaoStep3) {
-  _inherits(ActionStep, _BaoStep3);
+var ActionStep = function (_BaoStep4) {
+  _inherits(ActionStep, _BaoStep4);
 
   function ActionStep(context, name) {
     _classCallCheck(this, ActionStep);
 
-    var _this3 = _possibleConstructorReturn(this, (ActionStep.__proto__ || Object.getPrototypeOf(ActionStep)).call(this, context, name));
+    var _this4 = _possibleConstructorReturn(this, (ActionStep.__proto__ || Object.getPrototypeOf(ActionStep)).call(this, context, name));
 
-    _this3.type_ = 'ActionStep';
+    _this4.type_ = 'ActionStep';
     // Next steps.
-    _this3.nextSteps_ = new Map();
-    return _this3;
+    _this4.nextSteps_ = new Map();
+    return _this4;
   }
 
   /**
@@ -778,29 +877,29 @@ var ActionStep = function (_BaoStep3) {
     value: function run() {
       _get(ActionStep.prototype.__proto__ || Object.getPrototypeOf(ActionStep.prototype), 'run', this).call(this);
       // Register click handler.
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
 
       try {
-        for (var _iterator3 = this.nextSteps_[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var _step3$value = _slicedToArray(_step3.value, 2),
-              action = _step3$value[0],
-              next = _step3$value[1];
+        for (var _iterator4 = this.nextSteps_[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var _step4$value = _slicedToArray(_step4.value, 2),
+              action = _step4$value[0],
+              next = _step4$value[1];
 
           this.registerButton_(action, next);
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return) {
-            _iterator3.return();
+          if (!_iteratorNormalCompletion4 && _iterator4.return) {
+            _iterator4.return();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError4) {
+            throw _iteratorError4;
           }
         }
       }
