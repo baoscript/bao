@@ -226,7 +226,7 @@ var Context = function () {
     }
 
     /**
-     * Get variable
+     * Get variable by name.
      * @param {string} name 
      * @return {Variable}
      */
@@ -484,12 +484,12 @@ var BaoStep = function () {
       if (data) {
         // Set step name.
         this.name_ = data['name'];
-        // Set init step
+        // Set init step.
         if (data['init']) {
-          // Anonymous step
+          // Anonymous step.
           this.init_ = BaoStep.create(this.context_, data['init']);
         }
-        // print, literal only
+        // print, literal only.
         if (data['print'] !== undefined) {
           this.print_ = data['print'];
         }
@@ -502,7 +502,7 @@ var BaoStep = function () {
             for (var _iterator = data['decl'][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var varName = _step.value;
 
-              // Vars decl
+              // Vars decl.
               this.context_.maybeDeclareVar(varName);
             }
           } catch (err) {
@@ -520,7 +520,7 @@ var BaoStep = function () {
             }
           }
         }
-        // Set setlist
+        // Set setlist.
         if (data['set']) for (var _varName in data['set']) {
           this.set_.set(_varName, data['set'][_varName]);
         }
@@ -629,7 +629,7 @@ var IfStep = function (_BaoStep) {
   }
 
   /**
-   * Parse an IfStep
+   * Parse an IfStep.
    * @param {object} data 
    * @override
    */
@@ -728,7 +728,7 @@ var GotoStep = function (_BaoStep2) {
   return GotoStep;
 }(BaoStep);
 
-/** A step that wait on UI click actions. */
+/** A step that waits on UI click actions. */
 
 
 var ActionStep = function (_BaoStep3) {
