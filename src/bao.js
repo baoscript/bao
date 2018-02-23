@@ -4,14 +4,15 @@ const Context = require('./context.js').Context;
 
 class Bao {
   constructor() {
-    this.context_ = new Context(BaoStep.create);
+    this.context_ = new Context();
   }
 
   /** Initialize bao with JSON data. */
   parseString(json) {
     const data = JSON.parse(json);
     for (const stepJson of data) {
-      this.context_.setStep(stepJson['name'], stepJson);
+      this.context_.setStep(stepJson['name'],
+                            BaoStep.createBaoStep(this.context_, stepJson));
     }
   }
 

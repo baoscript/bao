@@ -68,13 +68,11 @@ class Variable {
 
 class Context {
   /**
-   * Create context with a BaoStep factory delegate.
-   * @param {function} baoStepFactory 
+   * Create Bao context.
    */
-  constructor(baoStepFactory) {
+  constructor() {
     this.vars_ = new Map();
     this.steps_ = new Map();
-    this.baoStepFactory_ = baoStepFactory;
   }
 
 
@@ -89,11 +87,10 @@ class Context {
   /**
    * Set the step with JSON data.
    * @param {string} name 
-   * @param {object} stepJson 
+   * @param {BaoStep} baoStep 
    */
-  setStep(name, stepJson) {
-    this.steps_.set(name, this.baoStepFactory_(this, stepJson));
-    this.getStep(name).parseJsonData(stepJson);
+  setStep(name, baoStep) {
+    this.steps_.set(name, baoStep);
   }
 
   /**
@@ -151,6 +148,8 @@ class Context {
 }
 
 module.exports = {
+  // Export class Context.
   Context: Context,
+  // Export eval.
   evalWithContext: evalWithContext
 };

@@ -5,6 +5,8 @@ const Context = context.Context;
 /** A base class for a step abstraction in bao. */
 class BaoStep {
   constructor(context) {
+    // Type of the step. One of BaoStep, IfStep, GotoStep, ActionStep.
+    this.type_ = 'BaoStep';
     // Context
     this.context_ = context;
     // Step name
@@ -46,7 +48,7 @@ class BaoStep {
 
   /** Get step type. */
   getType() {
-    return 'BaoStep';
+    return this.type_;
   }
 
   /** Get step name. */
@@ -120,14 +122,10 @@ class IfStep extends BaoStep {
   constructor(context, name) {
     super(context, name);
 
+    this.type_ = 'IfStep';
     this.condition_ = undefined;
     this.thenStep_ = undefined;
     this.elseStep_ = undefined;
-  }
-
-  /** @override */
-  getType() {
-    return "IfStep";
   }
 
   /**
@@ -172,13 +170,9 @@ class GotoStep extends BaoStep {
   constructor(context, name) {
     super(context, name);
 
+    this.type_ = 'GotoStep';
     // The **name** of goto step.
     this.goto_ = undefined;
-  }
-
-  /** @override */
-  getType() {
-    return "GotoStep";
   }
 
   /**
@@ -212,13 +206,9 @@ class ActionStep extends BaoStep {
   constructor(context, name) {
     super(context, name);
 
+    this.type_ = 'ActionStep';
     // Next steps.
     this.nextSteps_ = new Map();
-  }
-
-  /** @override */
-  getType() {
-    return "ActionStep";
   }
 
   /**
@@ -270,4 +260,7 @@ class ActionStep extends BaoStep {
   }
 }
 
-module.exports = BaoStep;
+module.exports = {
+  // Export factory.
+  createBaoStep: BaoStep.create
+};
