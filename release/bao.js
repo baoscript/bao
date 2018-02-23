@@ -179,15 +179,13 @@ var Variable = function () {
 
 var Context = function () {
   /**
-   * Create context with a BaoStep factory delegate.
-   * @param {function} baoStepFactory 
+   * Create Bao context.
    */
-  function Context(baoStepFactory) {
+  function Context() {
     _classCallCheck(this, Context);
 
     this.vars_ = new Map();
     this.steps_ = new Map();
-    this.baoStepFactory_ = baoStepFactory;
   }
 
   /**
@@ -205,14 +203,13 @@ var Context = function () {
     /**
      * Set the step with JSON data.
      * @param {string} name 
-     * @param {object} stepJson 
+     * @param {BaoStep} baoStep 
      */
 
   }, {
     key: 'setStep',
-    value: function setStep(name, stepJson) {
-      this.steps_.set(name, this.baoStepFactory_(this, stepJson));
-      this.getStep(name).parseJsonData(stepJson);
+    value: function setStep(name, baoStep) {
+      this.steps_.set(name, baoStep);
     }
 
     /**
@@ -229,7 +226,7 @@ var Context = function () {
     }
 
     /**
-     * Get variable
+     * Get variable by name.
      * @param {string} name 
      * @return {Variable}
      */
@@ -338,7 +335,9 @@ var Context = function () {
 }();
 
 module.exports = {
+  // Export class Context.
   Context: Context,
+  // Export eval.
   evalWithContext: evalWithContext
 };
 
@@ -358,7 +357,7 @@ var Bao = function () {
   function Bao() {
     _classCallCheck(this, Bao);
 
-    this.context_ = new Context(BaoStep.create);
+    this.context_ = new Context();
   }
 
   /** Initialize bao with JSON data. */
@@ -376,7 +375,7 @@ var Bao = function () {
         for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var stepJson = _step.value;
 
-          this.context_.setStep(stepJson['name'], stepJson);
+          this.context_.setStep(stepJson['name'], BaoStep.createBaoStep(this.context_, stepJson));
         }
       } catch (err) {
         _didIteratorError = true;
@@ -435,6 +434,8 @@ var BaoStep = function () {
   function BaoStep(context) {
     _classCallCheck(this, BaoStep);
 
+    // Type of the step. One of BaoStep, IfStep, GotoStep, ActionStep.
+    this.type_ = 'BaoStep';
     // Context
     this.context_ = context;
     // Step name
@@ -461,7 +462,7 @@ var BaoStep = function () {
 
     /** Get step type. */
     value: function getType() {
-      return 'BaoStep';
+      return this.type_;
     }
 
     /** Get step name. */
@@ -483,12 +484,12 @@ var BaoStep = function () {
       if (data) {
         // Set step name.
         this.name_ = data['name'];
-        // Set init step
+        // Set init step.
         if (data['init']) {
-          // Anonymous step
+          // Anonymous step.
           this.init_ = BaoStep.create(this.context_, data['init']);
         }
-        // print, literal only
+        // print, literal only.
         if (data['print'] !== undefined) {
           this.print_ = data['print'];
         }
@@ -501,7 +502,7 @@ var BaoStep = function () {
             for (var _iterator = data['decl'][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var varName = _step.value;
 
-              // Vars decl
+              // Vars decl.
               this.context_.maybeDeclareVar(varName);
             }
           } catch (err) {
@@ -519,7 +520,7 @@ var BaoStep = function () {
             }
           }
         }
-        // Set setlist
+        // Set setlist.
         if (data['set']) for (var _varName in data['set']) {
           this.set_.set(_varName, data['set'][_varName]);
         }
@@ -620,28 +621,21 @@ var IfStep = function (_BaoStep) {
 
     var _this = _possibleConstructorReturn(this, (IfStep.__proto__ || Object.getPrototypeOf(IfStep)).call(this, context, name));
 
+    _this.type_ = 'IfStep';
     _this.condition_ = undefined;
     _this.thenStep_ = undefined;
     _this.elseStep_ = undefined;
     return _this;
   }
 
-  /** @override */
+  /**
+   * Parse an IfStep.
+   * @param {object} data 
+   * @override
+   */
 
 
   _createClass(IfStep, [{
-    key: 'getType',
-    value: function getType() {
-      return "IfStep";
-    }
-
-    /**
-     * Parse an IfStep
-     * @param {object} data 
-     * @override
-     */
-
-  }, {
     key: 'parseJsonData',
     value: function parseJsonData(data) {
       _get(IfStep.prototype.__proto__ || Object.getPrototypeOf(IfStep.prototype), 'parseJsonData', this).call(this, data);
@@ -690,29 +684,22 @@ var GotoStep = function (_BaoStep2) {
   function GotoStep(context, name) {
     _classCallCheck(this, GotoStep);
 
-    // The **name** of goto step.
     var _this2 = _possibleConstructorReturn(this, (GotoStep.__proto__ || Object.getPrototypeOf(GotoStep)).call(this, context, name));
 
+    _this2.type_ = 'GotoStep';
+    // The **name** of goto step.
     _this2.goto_ = undefined;
     return _this2;
   }
 
-  /** @override */
+  /**
+   * Parse an GotoStep。
+   * @param {object} data 
+   * @override
+   */
 
 
   _createClass(GotoStep, [{
-    key: 'getType',
-    value: function getType() {
-      return "GotoStep";
-    }
-
-    /**
-     * Parse an GotoStep。
-     * @param {object} data 
-     * @override
-     */
-
-  }, {
     key: 'parseJsonData',
     value: function parseJsonData(data) {
       _get(GotoStep.prototype.__proto__ || Object.getPrototypeOf(GotoStep.prototype), 'parseJsonData', this).call(this, data);
@@ -741,7 +728,7 @@ var GotoStep = function (_BaoStep2) {
   return GotoStep;
 }(BaoStep);
 
-/** A step that wait on UI click actions. */
+/** A step that waits on UI click actions. */
 
 
 var ActionStep = function (_BaoStep3) {
@@ -750,29 +737,22 @@ var ActionStep = function (_BaoStep3) {
   function ActionStep(context, name) {
     _classCallCheck(this, ActionStep);
 
-    // Next steps.
     var _this3 = _possibleConstructorReturn(this, (ActionStep.__proto__ || Object.getPrototypeOf(ActionStep)).call(this, context, name));
 
+    _this3.type_ = 'ActionStep';
+    // Next steps.
     _this3.nextSteps_ = new Map();
     return _this3;
   }
 
-  /** @override */
+  /**
+   * Parse an ActionStep。
+   * @param {object} data 
+   * @override
+   */
 
 
   _createClass(ActionStep, [{
-    key: 'getType',
-    value: function getType() {
-      return "ActionStep";
-    }
-
-    /**
-     * Parse an ActionStep。
-     * @param {object} data 
-     * @override
-     */
-
-  }, {
     key: 'parseJsonData',
     value: function parseJsonData(data) {
       _get(ActionStep.prototype.__proto__ || Object.getPrototypeOf(ActionStep.prototype), 'parseJsonData', this).call(this, data);
@@ -851,7 +831,10 @@ var ActionStep = function (_BaoStep3) {
   return ActionStep;
 }(BaoStep);
 
-module.exports = BaoStep;
+module.exports = {
+  // Export factory.
+  createBaoStep: BaoStep.create
+};
 
 /***/ })
 /******/ ]);
