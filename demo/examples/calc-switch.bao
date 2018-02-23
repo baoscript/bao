@@ -1,0 +1,63 @@
+[
+  {
+    "name": "#begin",
+    "init": {
+      "decl": ["x", "y", "op"],
+      "set": {"x": 43, "y": 250, "op": "xor"}
+    },
+    "print": 43250209,
+    "goto": "Wait"
+  },
+  {
+    "name": "Wait",
+    "next": {
+      "calc": {"goto": "Calculate"},
+      "quit": {"goto": "#end"}
+    }
+  },
+  {
+    "name": "Calculate",
+    "switch": {
+      "expr": "op",
+      "cases": [
+        ["+", {"goto": "Plus"}],
+        ["-", {"goto": "Minus"}],
+        ["*", {"goto": "Times"}],
+        ["/", {"goto": "Divide"}]
+      ],
+      "default": {
+        "print": "Zusf is coming",
+        "goto": "Xor"
+      }
+    }
+  },
+  {
+    "name": "Plus",
+    "set": {"result": {"expr": "x + y"}},
+    "goto": "Wait"
+  },
+  {
+    "name": "Minus",
+    "set": {"result": {"expr": "x - y"}},
+    "goto": "Wait"
+  },
+  {
+    "name": "Times",
+    "set": {"result": {"expr": "x * y"}},
+    "goto": "Wait"
+  },
+  {
+    "name": "Divide",
+    "set": {"result": {"expr": "x / y"}},
+    "goto": "Wait"
+  },
+  {
+    "name": "Xor",
+    "set": {"result": {"expr": "x ^ y"}},
+    "goto": "Wait"
+  },
+  {
+    "name": "#end",
+    "print": "Done. Sddr is zusf!"
+  }
+]

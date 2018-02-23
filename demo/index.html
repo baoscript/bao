@@ -9,9 +9,7 @@
   <link rel="stylesheet" href="CodeMirror/addon/fold/foldgutter.min.css">
   <link rel="stylesheet" href="CodeMirror/addon/lint/lint.min.css">
   <link rel="stylesheet" href="style.css">
-
   <title>BaoScript Example | bao.js</title>
-
 </head>
 <body>
 <div class="container-fluid p-0" id="code-area">
@@ -44,6 +42,7 @@
   <button id="run" class="btn btn-primary btn-block">Run Code</button>
 </div>
 <div class="container-fluid pt-3 result-area">
+  <h2>BaoScript Running Area</h2>
   <div class="container"></div>
 </div>
 
@@ -66,6 +65,7 @@
 <script src="CodeMirror/addon/lint/lint.min.js"></script>
 <script src="CodeMirror/addon/lint/json-lint.min.js"></script>
 <script src="third_party/jsonlint.js"></script>
+<script src="third_party/jquery.ba-bbq.min.js"></script>
 
 <!-- bao.js -->
 <script src="../release/bao.min.js"></script>
@@ -105,13 +105,26 @@
       e.data.focus();
     });
 
-    $.get('examples/calc.bao', function(data) {
-      baoEditor.getDoc().setValue(data);
-      baoEditor.focus();
+    // Set default example file to load.
+    if (!$.deparam.fragment()['load-bao']) {
+      window.location.hash = $.param.fragment(window.location.hash, 'load-bao=calc');
+    }
+
+    function loadBaoCode(filename) {
+      $.get('examples/' + filename + '.bao', function(data) {
+        baoEditor.getDoc().setValue(data);
+        baoEditor.focus();
+      });
+      $.get('examples/' + filename + '.html', function(data) {
+        htmlEditor.getDoc().setValue(data);
+      });
+    }
+    loadBaoCode($.deparam.fragment()['load-bao']);
+
+    $(window).bind("hashchange", function(e) {
+      loadBaoCode($.deparam.fragment()['load-bao']);
     });
-    $.get('examples/calc.html', function(data) {
-      htmlEditor.getDoc().setValue(data);
-    });
+
     $('#run').click(function() {
       // Load HTML
       $('.result-area div').html(htmlEditor.getValue());

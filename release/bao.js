@@ -189,7 +189,7 @@ var Context = function () {
   }
 
   /**
-   * Get the step with name.
+   * Get step by name.
    * @param {string} name 
    */
 
@@ -917,8 +917,7 @@ var ActionStep = function (_BaoStep4) {
   }, {
     key: 'registerButton_',
     value: function registerButton_(action, next) {
-      $('[data-bao-action="' + action + '"]').prop('disabled', false);
-      $('[data-bao-action="' + action + '"]').click([this.context_, next], function (e) {
+      $('[data-bao-action="' + action + '"]').prop('disabled', false).click([this.context_, next], function (e) {
         var context = e.data[0];
         context.sync();
         var next = e.data[1];

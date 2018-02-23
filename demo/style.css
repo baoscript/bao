@@ -2,5 +2,5 @@
 #code-area>.tab-content{flex:1;}
 #code-area>.tab-content>.tab-pane.show{height:100%;display:flex;flex-direction:column;}
 .CodeMirror{flex:1;border:1px solid #dee2e6;border-top:0;}
-.result-area{display:none;background:#f5fff2;}
+.result-area{display:none;}
 button#run{border-radius:0;}
