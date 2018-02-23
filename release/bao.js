@@ -7,7 +7,7 @@
 		exports["Bao"] = factory(require("jQuery"));
 	else
 		root["Bao"] = factory(root["jQuery"]);
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_0__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -70,11 +70,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -85,15 +91,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $ = __webpack_require__(1);
+var $ = __webpack_require__(0);
 
 /**
  * Eval an expression with context.
- * @param {object} context 
+ * @param {Context} context 
  * @param {string} expr 
  */
 var evalWithContext = function evalWithContext(context, expr) {
-  return new Function("with(this){return " + expr + "}").call(context);
+  return new Function('with(this){return ' + expr + '}').call(context.getVarContext());
 };
 
 var Variable = function () {
@@ -118,11 +124,11 @@ var Variable = function () {
 
 
   _createClass(Variable, [{
-    key: "setVal",
+    key: 'setVal',
     value: function setVal(val, context) {
       // We only eval expression here.
-      if ((typeof val === "undefined" ? "undefined" : _typeof(val)) === 'object' && val['expr']) {
-        this.val_ = evalWithContext(context.getVarContext(), val['expr']);
+      if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) === 'object' && val['expr']) {
+        this.val_ = evalWithContext(context, val['expr']);
       } else {
         this.val_ = val;
       }
@@ -134,7 +140,7 @@ var Variable = function () {
      */
 
   }, {
-    key: "getVal",
+    key: 'getVal',
     value: function getVal() {
       return this.val_;
     }
@@ -145,7 +151,7 @@ var Variable = function () {
      */
 
   }, {
-    key: "updateDomElements_",
+    key: 'updateDomElements_',
     value: function updateDomElements_() {
       var el = $('[data-bao-target="' + this.name_ + '"]');
       el.val(this.val_);
@@ -156,7 +162,7 @@ var Variable = function () {
      */
 
   }, {
-    key: "sync",
+    key: 'sync',
     value: function sync() {
       var el = $('[data-bao-target="' + this.name_ + '"]');
       try {
@@ -172,25 +178,27 @@ var Variable = function () {
 }();
 
 var Context = function () {
-  function Context() {
+  /**
+   * Create context with a BaoStep factory delegate.
+   * @param {function} baoStepFactory 
+   */
+  function Context(baoStepFactory) {
     _classCallCheck(this, Context);
 
     this.vars_ = new Map();
     this.steps_ = new Map();
+    this.baoStepFactory_ = baoStepFactory;
   }
 
   /**
-   * Get the step. Create one if it doesn't exist.
+   * Get the step with name.
    * @param {string} name 
    */
 
 
   _createClass(Context, [{
-    key: "getStep",
+    key: 'getStep',
     value: function getStep(name) {
-      if (!this.steps_.has(name)) {
-        this.steps_.set(name, new BaoStep(this, name));
-      }
       return this.steps_.get(name);
     }
 
@@ -201,8 +209,9 @@ var Context = function () {
      */
 
   }, {
-    key: "setStep",
+    key: 'setStep',
     value: function setStep(name, stepJson) {
+      this.steps_.set(name, this.baoStepFactory_(this, stepJson));
       this.getStep(name).parseJsonData(stepJson);
     }
 
@@ -212,7 +221,7 @@ var Context = function () {
      */
 
   }, {
-    key: "maybeDeclareVar",
+    key: 'maybeDeclareVar',
     value: function maybeDeclareVar(name) {
       if (!this.hasVar(name)) {
         this.vars_.set(name, new Variable(name));
@@ -226,7 +235,7 @@ var Context = function () {
      */
 
   }, {
-    key: "getVar",
+    key: 'getVar',
     value: function getVar(name) {
       return this.vars_.get(name);
     }
@@ -238,7 +247,7 @@ var Context = function () {
      */
 
   }, {
-    key: "setVar",
+    key: 'setVar',
     value: function setVar(name, val) {
       this.maybeDeclareVar(name);
       this.vars_.get(name).setVal(val, this);
@@ -250,7 +259,7 @@ var Context = function () {
      */
 
   }, {
-    key: "hasVar",
+    key: 'hasVar',
     value: function hasVar(name) {
       return this.vars_.has(name);
     }
@@ -258,7 +267,7 @@ var Context = function () {
     /** Return a js object with mapping of variable name to value. */
 
   }, {
-    key: "getVarContext",
+    key: 'getVarContext',
     value: function getVarContext() {
       var varContext = {};
       var _iteratorNormalCompletion = true;
@@ -294,7 +303,7 @@ var Context = function () {
     /** Update all variables with DOM elements. */
 
   }, {
-    key: "sync",
+    key: 'sync',
     value: function sync() {
       var _iteratorNormalCompletion2 = true;
       var _didIteratorError2 = false;
@@ -328,285 +337,58 @@ var Context = function () {
   return Context;
 }();
 
-var BaoStep = function () {
-  function BaoStep(context) {
-    var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+module.exports = {
+  Context: Context,
+  evalWithContext: evalWithContext
+};
 
-    _classCallCheck(this, BaoStep);
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
 
-    // Context
-    this.context_ = context;
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-    // Step name
-    this.name_ = name;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-    // console.log
-    this.print_ = undefined;
-
-    // Init while entering, another step.
-    this.init_ = null;
-
-    // Next steps.
-    this.nextSteps_ = new Map();
-
-    this.condition_ = null;
-    this.then_ = null;
-    this.else_ = null;
-
-    // Goto
-    this.goto_ = null;
-
-    // Setters of this step
-    this.set_ = new Map();
-  }
-
-  /**
-   * Register click handler for next steps.
-   * @param {string} action 
-   * @param {BaoStep} next 
-   */
-
-
-  _createClass(BaoStep, [{
-    key: "registerButton",
-    value: function registerButton(action, next) {
-      $('[data-bao-action="' + action + '"]').prop('disabled', false);
-      $('[data-bao-action="' + action + '"]').click([this.context_, next], function (e) {
-        var context = e.data[0];
-        context.sync();
-        var next = e.data[1];
-        next.run();
-      });
-    }
-
-    /** Get step name. */
-
-  }, {
-    key: "getName",
-    value: function getName() {
-      return this.name_;
-    }
-
-    /**
-     * Initialize step with JSON data.
-     * @param {object} data 
-     */
-
-  }, {
-    key: "parseJsonData",
-    value: function parseJsonData(data) {
-      if (data) {
-        // Set step name.
-        this.name_ = data['name'];
-        // Set init step
-        if (data['init']) {
-          // Anonymous step
-          this.init_ = new BaoStep(this.context_);
-          this.init_.parseJsonData(data['init']);
-        }
-        // print, literal only
-        if (data['print'] !== undefined) {
-          this.print_ = data['print'];
-        }
-        if (data['decl']) {
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
-
-          try {
-            for (var _iterator3 = data['decl'][Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var varName = _step3.value;
-
-              // Vars decl
-              this.context_.maybeDeclareVar(varName);
-            }
-          } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                _iterator3.return();
-              }
-            } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
-              }
-            }
-          }
-        }
-        // Set setlist
-        for (var _varName in data['set']) {
-          this.set_.set(_varName, data['set'][_varName]);
-        }
-
-        // At most one of next, goto and case.
-
-        // Set goto
-        if (data['goto']) {
-          // goto must be a string
-          this.goto_ = this.context_.getStep(data['goto']);
-        }
-        // Next, register buttons
-        if (data['next']) {
-          for (var action in data['next']) {
-            var next = new BaoStep(this.context_);
-            next.parseJsonData(data['next'][action]);
-            this.nextSteps_.set(action, next);
-          }
-        }
-
-        // if clause.
-        if (data['if']) {
-          this.condition_ = data['if']['condition'];
-          this.then_ = new BaoStep(this.context_);
-          this.then_.parseJsonData(data['if']['then']);
-          if (data['if']['else']) {
-            this.else_ = new BaoStep(this.context_);
-            this.else_.parseJsonData(data['if']['else']);
-          }
-        }
-      }
-    }
-
-    /** 
-     * Run the setter step.
-     * @private
-     */
-
-  }, {
-    key: "setVars_",
-    value: function setVars_() {
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
-
-      try {
-        for (var _iterator4 = this.set_[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          var _step4$value = _slicedToArray(_step4.value, 2),
-              name = _step4$value[0],
-              val = _step4$value[1];
-
-          this.context_.setVar(name, val);
-        }
-      } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion4 && _iterator4.return) {
-            _iterator4.return();
-          }
-        } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
-          }
-        }
-      }
-    }
-
-    /** Run the step. */
-
-  }, {
-    key: "run",
-    value: function run() {
-      // Remove all registered click handlers first.
-      $('[data-bao-action]').off('click').prop('disabled', true);
-
-      if (this.name_) {
-        console.log('Current step: ' + this.name_);
-      }
-
-      // Run init
-      if (this.init_) {
-        this.init_.run();
-      }
-      if (this.set_) {
-        this.setVars_();
-      }
-      if (this.print_ != undefined) {
-        console.log(this.print_);
-      }
-
-      // Register click handler.
-      var _iteratorNormalCompletion5 = true;
-      var _didIteratorError5 = false;
-      var _iteratorError5 = undefined;
-
-      try {
-        for (var _iterator5 = this.nextSteps_[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-          var _step5$value = _slicedToArray(_step5.value, 2),
-              action = _step5$value[0],
-              next = _step5$value[1];
-
-          this.registerButton(action, next);
-        }
-      } catch (err) {
-        _didIteratorError5 = true;
-        _iteratorError5 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion5 && _iterator5.return) {
-            _iterator5.return();
-          }
-        } finally {
-          if (_didIteratorError5) {
-            throw _iteratorError5;
-          }
-        }
-      }
-
-      if (this.condition_) {
-        if (evalWithContext(this.context_.getVarContext(), this.condition_)) {
-          return this.then_.run();
-        }
-        if (this.else_) {
-          return this.else_.run();
-        }
-      }
-
-      return this.goto_ && this.goto_.run();
-    }
-  }]);
-
-  return BaoStep;
-}();
+var $ = __webpack_require__(0);
+var BaoStep = __webpack_require__(3);
+var Context = __webpack_require__(1).Context;
 
 var Bao = function () {
   function Bao() {
     _classCallCheck(this, Bao);
 
-    this.context_ = new Context();
+    this.context_ = new Context(BaoStep.create);
   }
 
   /** Initialize bao with JSON data. */
 
 
   _createClass(Bao, [{
-    key: "parseString",
+    key: 'parseString',
     value: function parseString(json) {
       var data = JSON.parse(json);
-      var _iteratorNormalCompletion6 = true;
-      var _didIteratorError6 = false;
-      var _iteratorError6 = undefined;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
       try {
-        for (var _iterator6 = data[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-          var stepJson = _step6.value;
+        for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var stepJson = _step.value;
 
           this.context_.setStep(stepJson['name'], stepJson);
         }
       } catch (err) {
-        _didIteratorError6 = true;
-        _iteratorError6 = err;
+        _didIteratorError = true;
+        _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion6 && _iterator6.return) {
-            _iterator6.return();
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
           }
         } finally {
-          if (_didIteratorError6) {
-            throw _iteratorError6;
+          if (_didIteratorError) {
+            throw _iteratorError;
           }
         }
       }
@@ -615,7 +397,7 @@ var Bao = function () {
     /** Start bao flow. */
 
   }, {
-    key: "run",
+    key: 'run',
     value: function run() {
       var current = this.context_.getStep('#begin');
       current.run();
@@ -628,10 +410,448 @@ var Bao = function () {
 module.exports = Bao;
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports) {
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var $ = __webpack_require__(0);
+var context = __webpack_require__(1);
+var Context = context.Context;
+
+/** A base class for a step abstraction in bao. */
+
+var BaoStep = function () {
+  function BaoStep(context) {
+    _classCallCheck(this, BaoStep);
+
+    // Context
+    this.context_ = context;
+    // Step name
+    this.name_ = undefined;
+    // console.log
+    this.print_ = undefined;
+    // Init while entering, another step.
+    this.init_ = undefined;
+    // Setters of this step
+    this.set_ = new Map();
+  }
+
+  /**
+   * A factory method to create bao steps with correct subclasses.
+   * @param {Context} context
+   * @param {object} data
+   * @return {BaoStep}
+   */
+
+
+  _createClass(BaoStep, [{
+    key: 'getType',
+
+
+    /** Get step type. */
+    value: function getType() {
+      return 'BaoStep';
+    }
+
+    /** Get step name. */
+
+  }, {
+    key: 'getName',
+    value: function getName() {
+      return this.name_;
+    }
+
+    /**
+     * Initialize step with JSON data.
+     * @param {object} data 
+     */
+
+  }, {
+    key: 'parseJsonData',
+    value: function parseJsonData(data) {
+      if (data) {
+        // Set step name.
+        this.name_ = data['name'];
+        // Set init step
+        if (data['init']) {
+          // Anonymous step
+          this.init_ = BaoStep.create(this.context_, data['init']);
+        }
+        // print, literal only
+        if (data['print'] !== undefined) {
+          this.print_ = data['print'];
+        }
+        if (data['decl']) {
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = data['decl'][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var varName = _step.value;
+
+              // Vars decl
+              this.context_.maybeDeclareVar(varName);
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        }
+        // Set setlist
+        if (data['set']) for (var _varName in data['set']) {
+          this.set_.set(_varName, data['set'][_varName]);
+        }
+      }
+    }
+
+    /** 
+     * Run the setter step.
+     * @private
+     */
+
+  }, {
+    key: 'setVars_',
+    value: function setVars_() {
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = this.set_[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var _step2$value = _slicedToArray(_step2.value, 2),
+              name = _step2$value[0],
+              val = _step2$value[1];
+
+          this.context_.setVar(name, val);
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+    }
+
+    /** Run the step. */
+
+  }, {
+    key: 'run',
+    value: function run() {
+      // Remove all registered click handlers first.
+      $('[data-bao-action]').off('click').prop('disabled', true);
+      console.log('Current step: ' + this.name_ + ' (' + this.getType() + ')');
+      // Run init
+      if (this.init_) {
+        this.init_.run();
+      }
+      if (this.set_) {
+        this.setVars_();
+      }
+      if (this.print_ != undefined) {
+        console.log(this.print_);
+      }
+      return null;
+    }
+  }], [{
+    key: 'create',
+    value: function create(context, data) {
+      if (data['if']) {
+        var ifStep = new IfStep(context);
+        ifStep.parseJsonData(data);
+        return ifStep;
+      }
+      if (data['goto']) {
+        var gotoStep = new GotoStep(context);
+        gotoStep.parseJsonData(data);
+        return gotoStep;
+      }
+      if (data['next']) {
+        var actionStep = new ActionStep(context);
+        actionStep.parseJsonData(data);
+        return actionStep;
+      }
+      var step = new BaoStep(context);
+      step.parseJsonData(data);
+      return step;
+    }
+  }]);
+
+  return BaoStep;
+}();
+
+/** A step that contains if clause. */
+
+
+var IfStep = function (_BaoStep) {
+  _inherits(IfStep, _BaoStep);
+
+  function IfStep(context, name) {
+    _classCallCheck(this, IfStep);
+
+    var _this = _possibleConstructorReturn(this, (IfStep.__proto__ || Object.getPrototypeOf(IfStep)).call(this, context, name));
+
+    _this.condition_ = undefined;
+    _this.thenStep_ = undefined;
+    _this.elseStep_ = undefined;
+    return _this;
+  }
+
+  /** @override */
+
+
+  _createClass(IfStep, [{
+    key: 'getType',
+    value: function getType() {
+      return "IfStep";
+    }
+
+    /**
+     * Parse an IfStep
+     * @param {object} data 
+     * @override
+     */
+
+  }, {
+    key: 'parseJsonData',
+    value: function parseJsonData(data) {
+      _get(IfStep.prototype.__proto__ || Object.getPrototypeOf(IfStep.prototype), 'parseJsonData', this).call(this, data);
+      if (!data['if'] || !data['if']['condition'] || !data['if']['then']) {
+        throw 'Invalid if step';
+      }
+      this.condition_ = data['if']['condition'];
+      this.thenStep_ = BaoStep.create(this.context_, data['if']['then']);
+      // Optional else clause.
+      if (data['if']['else']) {
+        this.elseStep_ = BaoStep.create(this.context_, data['if']['else']);
+      }
+    }
+
+    /**
+     * If step implementation.
+     * @override
+     */
+
+  }, {
+    key: 'run',
+    value: function run() {
+      _get(IfStep.prototype.__proto__ || Object.getPrototypeOf(IfStep.prototype), 'run', this).call(this);
+      if (!this.condition_ || !this.thenStep_) {
+        throw 'Invalid if step';
+      }
+      if (context.evalWithContext(this.context_, this.condition_)) {
+        return this.thenStep_.run();
+      }
+      if (this.elseStep_) {
+        return this.elseStep_.run();
+      }
+      return null;
+    }
+  }]);
+
+  return IfStep;
+}(BaoStep);
+
+/** A step that contains goto clause. */
+
+
+var GotoStep = function (_BaoStep2) {
+  _inherits(GotoStep, _BaoStep2);
+
+  function GotoStep(context, name) {
+    _classCallCheck(this, GotoStep);
+
+    // The **name** of goto step.
+    var _this2 = _possibleConstructorReturn(this, (GotoStep.__proto__ || Object.getPrototypeOf(GotoStep)).call(this, context, name));
+
+    _this2.goto_ = undefined;
+    return _this2;
+  }
+
+  /** @override */
+
+
+  _createClass(GotoStep, [{
+    key: 'getType',
+    value: function getType() {
+      return "GotoStep";
+    }
+
+    /**
+     * Parse an GotoStep。
+     * @param {object} data 
+     * @override
+     */
+
+  }, {
+    key: 'parseJsonData',
+    value: function parseJsonData(data) {
+      _get(GotoStep.prototype.__proto__ || Object.getPrototypeOf(GotoStep.prototype), 'parseJsonData', this).call(this, data);
+      if (!data['goto']) {
+        throw 'Invalid goto step';
+      }
+      this.goto_ = data['goto'];
+    }
+
+    /**
+     * Goto step implementation.
+     * @override
+     */
+
+  }, {
+    key: 'run',
+    value: function run() {
+      _get(GotoStep.prototype.__proto__ || Object.getPrototypeOf(GotoStep.prototype), 'run', this).call(this);
+      if (!this.goto_ || !this.context_.getStep(this.goto_)) {
+        throw 'Invalid goto step';
+      }
+      return this.context_.getStep(this.goto_).run();
+    }
+  }]);
+
+  return GotoStep;
+}(BaoStep);
+
+/** A step that wait on UI click actions. */
+
+
+var ActionStep = function (_BaoStep3) {
+  _inherits(ActionStep, _BaoStep3);
+
+  function ActionStep(context, name) {
+    _classCallCheck(this, ActionStep);
+
+    // Next steps.
+    var _this3 = _possibleConstructorReturn(this, (ActionStep.__proto__ || Object.getPrototypeOf(ActionStep)).call(this, context, name));
+
+    _this3.nextSteps_ = new Map();
+    return _this3;
+  }
+
+  /** @override */
+
+
+  _createClass(ActionStep, [{
+    key: 'getType',
+    value: function getType() {
+      return "ActionStep";
+    }
+
+    /**
+     * Parse an ActionStep。
+     * @param {object} data 
+     * @override
+     */
+
+  }, {
+    key: 'parseJsonData',
+    value: function parseJsonData(data) {
+      _get(ActionStep.prototype.__proto__ || Object.getPrototypeOf(ActionStep.prototype), 'parseJsonData', this).call(this, data);
+      if (!data['next']) {
+        throw 'Invalid action step';
+      }
+      if (data['next']) {
+        for (var action in data['next']) {
+          // Create an anonymous step.
+          var next = BaoStep.create(this.context_, data['next'][action]);
+          this.nextSteps_.set(action, next);
+        }
+      }
+    }
+
+    /**
+     * Action step implementation.
+     * @override
+     */
+
+  }, {
+    key: 'run',
+    value: function run() {
+      _get(ActionStep.prototype.__proto__ || Object.getPrototypeOf(ActionStep.prototype), 'run', this).call(this);
+      // Register click handler.
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = this.nextSteps_[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var _step3$value = _slicedToArray(_step3.value, 2),
+              action = _step3$value[0],
+              next = _step3$value[1];
+
+          this.registerButton_(action, next);
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Register click handler for next steps.
+     * @param {string} action 
+     * @param {BaoStep} next 
+     * @private
+     */
+
+  }, {
+    key: 'registerButton_',
+    value: function registerButton_(action, next) {
+      $('[data-bao-action="' + action + '"]').prop('disabled', false);
+      $('[data-bao-action="' + action + '"]').click([this.context_, next], function (e) {
+        var context = e.data[0];
+        context.sync();
+        var next = e.data[1];
+        next.run();
+      });
+    }
+  }]);
+
+  return ActionStep;
+}(BaoStep);
+
+module.exports = BaoStep;
 
 /***/ })
 /******/ ]);
