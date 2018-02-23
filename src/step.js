@@ -64,22 +64,22 @@ class BaoStep {
     if (data) {
       // Set step name.
       this.name_ = data['name'];
-      // Set init step
+      // Set init step.
       if (data['init']) {
-        // Anonymous step
+        // Anonymous step.
         this.init_ = BaoStep.create(this.context_, data['init']);
       }
-      // print, literal only
+      // print, literal only.
       if (data['print'] !== undefined) {
         this.print_ = data['print'];
       }
       if (data['decl']) {
         for (const varName of data['decl']) {
-          // Vars decl
+          // Vars decl.
           this.context_.maybeDeclareVar(varName);
         }
       }
-      // Set setlist
+      // Set setlist.
       if (data['set'])
       for (const varName in data['set']) {
         this.set_.set(varName, data['set'][varName]);
@@ -129,7 +129,7 @@ class IfStep extends BaoStep {
   }
 
   /**
-   * Parse an IfStep
+   * Parse an IfStep.
    * @param {object} data 
    * @override
    */
@@ -201,7 +201,7 @@ class GotoStep extends BaoStep {
   }
 }
 
-/** A step that wait on UI click actions. */
+/** A step that waits on UI click actions. */
 class ActionStep extends BaoStep {
   constructor(context, name) {
     super(context, name);

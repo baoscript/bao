@@ -104,7 +104,7 @@ class Context {
   }
 
   /**
-   * Get variable
+   * Get variable by name.
    * @param {string} name 
    * @return {Variable}
    */
