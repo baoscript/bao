@@ -4,7 +4,7 @@ const Context = require('../context').Context;
 /** A base class for a step abstraction in bao. */
 class BaoStep {
   constructor(context) {
-    // Type of the step. One of BaoStep, IfStep, GotoStep, ActionStep.
+    // Type of the step. One of BaoStep, IfStep, GotoStep, ActionStep and SwitchStep.
     this.type_ = 'BaoStep';
     // Context
     this.context_ = context;
