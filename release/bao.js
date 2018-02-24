@@ -119,7 +119,7 @@ var Variable = function () {
 
   /**
    * Set the value of this variable.
-   * @param {string} val
+   * @param {anything} val
    */
 
 

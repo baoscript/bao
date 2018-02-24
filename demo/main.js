@@ -38,13 +38,19 @@ $(function() {
     window.location.hash = $.param.fragment(window.location.hash, 'load-bao=calc');
   }
 
-  function createAlertBox(text) {
+  function createAlertBox(text, timeout = 5000) {
     return $('<div/>', {
       text: text,
       class: 'alert alert-danger m-0'
-    }).insertAfter($('#code-area>nav'))
-      .hide().slideDown('slow').delay(4000).slideUp('slow');
+    }).appendTo($('#code-area'))
+      .hide().slideDown('slow').delay(timeout).slideUp('slow');
   }
+
+  // Handle all uncaught exceptions.
+  window.addEventListener('error', function(e) {
+    console.log(e);
+    createAlertBox(e.message);
+  })
 
   function loadBaoCode(filename) {
     const baoName = 'examples/' + filename + '.bao';
@@ -80,11 +86,12 @@ $(function() {
   });
 
   $('#run').click(function() {
-    // Load HTML
+    // Load html
     $('.result-area div').html(htmlEditor.getValue());
-    $('.result-area').removeClass('d-none');
-    $('html,body').animate({scrollTop: $('.result-area').offset().top}, 'slow');
     // Run bao
     Bao.runBao(baoEditor.getValue());
+    // Show result area
+    $('.result-area').removeClass('d-none');
+    $('html,body').animate({scrollTop: $('.result-area').offset().top}, 'slow');
   });
 });
