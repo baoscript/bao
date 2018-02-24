@@ -104,34 +104,29 @@ var evalWithContext = function evalWithContext(context, expr) {
 
 var Variable = function () {
   /**
-   * Create a variable with name.
+   * Create a variable with name and type.
    * @param {string} name 
+   * @param {string} type one of number, string and boolean.
    */
-  function Variable(name) {
+  function Variable(name, type) {
     _classCallCheck(this, Variable);
 
     this.name_ = name;
-    this.val_ = null;
+    this.val_ = undefined;
+    this.type_ = type;
     this.updateDomElements_();
   }
 
   /**
-   * Set the value of variable. It takes either a literal or
-   * an expression object, e.g. {'expr': 'a+b'}.
-   * @param {string|object} val 
-   * @param {Context} context 
+   * Set the value of this variable.
+   * @param {string} val
    */
 
 
   _createClass(Variable, [{
     key: 'setVal',
-    value: function setVal(val, context) {
-      // We only eval expression here.
-      if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) === 'object' && val['expr']) {
-        this.val_ = evalWithContext(context, val['expr']);
-      } else {
-        this.val_ = val;
-      }
+    value: function setVal(val) {
+      this.val_ = val;
       this.updateDomElements_();
     }
 
@@ -146,7 +141,7 @@ var Variable = function () {
     }
 
     /** 
-     * Update the value of corresponding DOM element with this variable.
+     * Update the value of the linked DOM element with this variable.
      * @private
      */
 
@@ -158,18 +153,39 @@ var Variable = function () {
     }
 
     /**
-     * Update the value with corresponding DOM element.
+     * Update the value with the linked DOM element.
      */
 
   }, {
     key: 'sync',
     value: function sync() {
-      var el = $('[data-bao-target="' + this.name_ + '"]');
-      try {
-        // Try to parse types, otherwise treat as a string literal.
-        this.val_ = eval(el.val());
-      } catch (e) {
-        this.val_ = el.val();
+      var val = $('[data-bao-target="' + this.name_ + '"]').val();
+      switch (this.type_) {
+        case 'number':
+          this.val_ = Number(val);
+          if (isNaN(this.val_)) {
+            throw 'Invalid number ' + val;
+          }
+          break;
+        case 'string':
+          this.val_ = val;
+          break;
+        case 'boolean':
+          switch (val) {
+            case 1:
+            case 'true':
+              this.val_ = true;
+              break;
+            case 0:
+            case 'false':
+              this.val_ = false;
+              break;
+            default:
+              throw 'A boolean value must be either true or false (' + val + ')';
+          }
+          break;
+        default:
+          throw 'Unsupported variable type';
       }
     }
   }]);
@@ -180,6 +196,7 @@ var Variable = function () {
 var Context = function () {
   /**
    * Create Bao context.
+   * @param {function} baoStepFactory factory function to create BaoStep.
    */
   function Context(baoStepFactory) {
     _classCallCheck(this, Context);
@@ -224,13 +241,14 @@ var Context = function () {
     /**
      * Declare a variable if it doesn't exist.
      * @param {string} name 
+     * @param {string} type
      */
 
   }, {
     key: 'maybeDeclareVar',
-    value: function maybeDeclareVar(name) {
+    value: function maybeDeclareVar(name, type) {
       if (!this.hasVar(name)) {
-        this.vars_.set(name, new Variable(name));
+        this.vars_.set(name, new Variable(name, type));
       }
     }
 
@@ -247,7 +265,8 @@ var Context = function () {
     }
 
     /**
-     * Set value of the variable. Declare one if it doesn't exist.
+     * Set value of the variable. Declare one if it doesn't exist with the type of val.
+     * It takes either a literal or an expression object, e.g. {'expr': 'a+b'}.
      * @param {string} name 
      * @param {string|object} val 
      */
@@ -255,8 +274,14 @@ var Context = function () {
   }, {
     key: 'setVar',
     value: function setVar(name, val) {
-      this.maybeDeclareVar(name);
-      this.vars_.get(name).setVal(val, this);
+      // We only eval expr here.
+      if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) === 'object' && val['expr']) {
+        this.setVar(name, evalWithContext(this, val['expr']));
+      } else {
+        // Deduce the type.
+        this.maybeDeclareVar(name, typeof val === 'undefined' ? 'undefined' : _typeof(val));
+        this.vars_.get(name).setVal(val);
+      }
     }
 
     /**
@@ -369,7 +394,7 @@ var BaoStep = function () {
   function BaoStep(context) {
     _classCallCheck(this, BaoStep);
 
-    // Type of the step. One of BaoStep, IfStep, GotoStep, ActionStep.
+    // Type of the step. One of BaoStep, IfStep, GotoStep, ActionStep and SwitchStep.
     this.type_ = 'BaoStep';
     // Context
     this.context_ = context;
@@ -423,30 +448,9 @@ var BaoStep = function () {
           this.print_ = data['print'];
         }
         if (data['decl']) {
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
-
-          try {
-            for (var _iterator = data['decl'][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var varName = _step.value;
-
-              // Vars decl.
-              this.context_.maybeDeclareVar(varName);
-            }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
-            }
+          for (var varName in data['decl']) {
+            // Vars decl.
+            this.context_.maybeDeclareVar(varName, data['decl'][varName]);
           }
         }
         // Set setlist.
@@ -464,29 +468,29 @@ var BaoStep = function () {
   }, {
     key: 'setVars_',
     value: function setVars_() {
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
       try {
-        for (var _iterator2 = this.set_[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var _step2$value = _slicedToArray(_step2.value, 2),
-              name = _step2$value[0],
-              val = _step2$value[1];
+        for (var _iterator = this.set_[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var _step$value = _slicedToArray(_step.value, 2),
+              name = _step$value[0],
+              val = _step$value[1];
 
           this.context_.setVar(name, val);
         }
       } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
+        _didIteratorError = true;
+        _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return) {
-            _iterator2.return();
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
           }
         } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
+          if (_didIteratorError) {
+            throw _iteratorError;
           }
         }
       }

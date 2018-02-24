@@ -48,9 +48,9 @@ class BaoStep {
         this.print_ = data['print'];
       }
       if (data['decl']) {
-        for (const varName of data['decl']) {
+        for (const varName in data['decl']) {
           // Vars decl.
-          this.context_.maybeDeclareVar(varName);
+          this.context_.maybeDeclareVar(varName, data['decl'][varName]);
         }
       }
       // Set setlist.
