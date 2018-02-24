@@ -24,7 +24,7 @@ class Variable {
 
   /**
    * Set the value of this variable.
-   * @param {string} val
+   * @param {anything} val
    */
   setVal(val) {
     this.val_ = val;
