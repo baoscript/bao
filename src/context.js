@@ -11,28 +11,23 @@ const evalWithContext = function(context, expr) {
 
 class Variable {
   /**
-   * Create a variable with name.
+   * Create a variable with name and type.
    * @param {string} name 
+   * @param {string} type one of number, string and boolean.
    */
-  constructor(name) {
+  constructor(name, type) {
     this.name_ = name;
-    this.val_ = null;
+    this.val_ = undefined;
+    this.type_ = type;
     this.updateDomElements_();
   }
 
   /**
-   * Set the value of variable. It takes either a literal or
-   * an expression object, e.g. {'expr': 'a+b'}.
-   * @param {string|object} val 
-   * @param {Context} context 
+   * Set the value of this variable.
+   * @param {string} val
    */
-  setVal(val, context) {
-    // We only eval expression here.
-    if (typeof val === 'object' && val['expr']) {
-      this.val_ = evalWithContext(context, val['expr']);
-    } else {
-      this.val_ = val;
-    }
+  setVal(val) {
+    this.val_ = val;
     this.updateDomElements_();
   }
 
@@ -44,7 +39,7 @@ class Variable {
   }
 
   /** 
-   * Update the value of corresponding DOM element with this variable.
+   * Update the value of the linked DOM element with this variable.
    * @private
    */
   updateDomElements_() {
@@ -53,15 +48,36 @@ class Variable {
   }
 
   /**
-   * Update the value with corresponding DOM element.
+   * Update the value with the linked DOM element.
    */
   sync() {
-    const el = $('[data-bao-target="' + this.name_ + '"]');
-    try {
-      // Try to parse types, otherwise treat as a string literal.
-      this.val_ = eval(el.val());
-    } catch (e) {
-      this.val_ = el.val();
+    const val = $('[data-bao-target="' + this.name_ + '"]').val();
+    switch (this.type_) {
+      case 'number':
+        this.val_ = Number(val);
+        if (isNaN(this.val_)) {
+          throw 'Invalid number ' + val;
+        }
+        break;
+      case 'string':
+        this.val_ = val;
+        break;
+      case 'boolean':
+        switch (val) {
+          case 1:
+          case 'true':
+            this.val_ = true;
+            break;
+          case 0:
+          case 'false':
+            this.val_ = false;
+            break;
+          default:
+            throw 'A boolean value must be either true or false (' + val + ')';
+        }
+        break;
+      default:
+        throw 'Unsupported variable type';
     }
   }
 }
@@ -69,6 +85,7 @@ class Variable {
 class Context {
   /**
    * Create Bao context.
+   * @param {function} baoStepFactory factory function to create BaoStep.
    */
   constructor(baoStepFactory) {
     this.baoStepFactory_ = baoStepFactory;
@@ -101,10 +118,11 @@ class Context {
   /**
    * Declare a variable if it doesn't exist.
    * @param {string} name 
+   * @param {string} type
    */
-  maybeDeclareVar(name) {
+  maybeDeclareVar(name, type) {
     if (!this.hasVar(name)) {
-      this.vars_.set(name, new Variable(name));
+      this.vars_.set(name, new Variable(name, type));
     }
   }
 
@@ -118,13 +136,20 @@ class Context {
   }
 
   /**
-   * Set value of the variable. Declare one if it doesn't exist.
+   * Set value of the variable. Declare one if it doesn't exist with the type of val.
+   * It takes either a literal or an expression object, e.g. {'expr': 'a+b'}.
    * @param {string} name 
    * @param {string|object} val 
    */
   setVar(name, val) {
-    this.maybeDeclareVar(name);
-    this.vars_.get(name).setVal(val, this);
+    // We only eval expr here.
+    if (typeof val === 'object' && val['expr']) {
+      this.setVar(name, evalWithContext(this, val['expr']));
+    } else {
+      // Deduce the type.
+      this.maybeDeclareVar(name, typeof val);
+      this.vars_.get(name).setVal(val);
+    }
   }
 
   /**

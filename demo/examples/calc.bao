@@ -2,7 +2,7 @@
   {
     "name": "#begin",
     "init": {
-      "decl": ["x", "y", "op"],
+      "decl": {"x": "number", "y": "number", "op": "string", "result": "number"},
       "set": {"x": 43, "y": 250, "op": "xor"}
     },
     "print": 43250209,
