@@ -73,6 +73,12 @@ $(function() {
     window.location.hash = $.param.fragment(window.location.hash, 'load-bao=' + $('#file-name-input').val());
   });
 
+  $.getJSON('examples/examples.json', function(data) {
+    $('#file-name-input').autocomplete({
+      source: data
+    });
+  });
+
   $('#run').click(function() {
     // Load HTML
     $('.result-area div').html(htmlEditor.getValue());
