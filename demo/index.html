@@ -13,21 +13,34 @@
 </head>
 <body>
 <div class="container-fluid p-0" id="code-area">
-  <ul class="nav nav-tabs" id="code-area-tabs" role="tablist">
-    <li class="navbar-brand mx-4">bao.js</li>
-    <li class="nav-item">
-      <a class="nav-link active" id="bao-tab" data-toggle="tab" href="#bao" role="tab" aria-controls="bao" aria-selected="true">Bao</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" id="html-tab" data-toggle="tab" href="#html" role="tab" aria-controls="html" aria-selected="false">HTML</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" id="graph-tab" data-toggle="tab" href="#flowchart" role="tab" aria-controls="flowchart" aria-selected="false">Flowchart</a>
-    </li>
-    <li class="navbar-text ml-auto mr-4 d-none d-sm-block">
-      <a href="https://github.com/gongruya/bao" target="_blank">GitHub <i class="fa fa-external-link"></i></a>
-    </li>
-  </ul>
+  <nav class="navbar navbar-expand navbar-light bg-light pb-0 border-bottom">
+    <span class="navbar-brand">bao.js</span>
+    <ul class="nav nav-tabs border-bottom-0" id="code-area-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="bao-tab" data-toggle="tab" href="#bao" role="tab" aria-controls="bao" aria-selected="true">Bao</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="html-tab" data-toggle="tab" href="#html" role="tab" aria-controls="html" aria-selected="false">HTML</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="graph-tab" data-toggle="tab" href="#flowchart" role="tab" aria-controls="flowchart" aria-selected="false">Flowchart</a>
+      </li>
+    </ul>
+
+    <form class="form-inline" id="file-name-form">
+      <div class="input-group d-none d-sm-flex">
+        <div class="input-group-prepend d-none d-md-flex">
+          <span class="input-group-text pr-1">./examples/</span>
+        </div>
+        <input id="file-name-input" type="text" class="form-control pl-0" placeholder="Example script" aria-label="filename" aria-describedby="filename">
+        <div class="input-group-append d-none d-md-flex">
+          <span class="input-group-text pl-0">.bao, .html</span>
+          <button class="btn btn-secondary" type="submit"><i class="fa fa-cloud-download"></i></button>
+        </div>
+      </div>
+    </form>
+  </nav>
+  
   <div class="tab-content">
     <div class="tab-pane show active" id="bao" role="tabpanel" aria-labelledby="bao-tab">
       <textarea class="form-control" id="bao-code"></textarea>
@@ -41,7 +54,7 @@
   </div>
   <button id="run" class="btn btn-primary btn-block">Run Code</button>
 </div>
-<div class="container-fluid pt-3 result-area">
+<div class="container-fluid pt-3 result-area d-none">
   <h2>BaoScript Running Area</h2>
   <div class="container"></div>
 </div>
@@ -66,76 +79,9 @@
 <script src="CodeMirror/addon/lint/json-lint.min.js"></script>
 <script src="third_party/jsonlint.js"></script>
 <script src="third_party/jquery.ba-bbq.min.js"></script>
-
 <!-- bao.js -->
 <script src="../release/bao.min.js"></script>
-<script>
-  $(function() {
-    const baoEditor = CodeMirror.fromTextArea(document.getElementById('bao-code'), {
-        mode: "application/json",
-        lineNumbers: true,
-        matchBrackets: true,
-        autoCloseBrackets: true,
-        lineWrapping: true,
-        foldGutter: true,
-        lint: true,
-        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"]
-      });
-    const htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
-        mode: "text/html",
-        lineNumbers: true,
-        matchTags: true,
-        autoCloseTags: true,
-        lineWrapping: true,
-        foldGutter: true,
-        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
-      });
-
-    $('#code-area-tabs>li.nav-item>a[href="#bao"]').click(baoEditor, function(e) {
-      e.preventDefault();
-      $(this).tab('show');
-      e.data.refresh();
-      e.data.focus();
-    });
-
-    $('#code-area-tabs>li.nav-item>a[href="#html"]').click(htmlEditor, function(e) {
-      e.preventDefault();
-      $(this).tab('show');
-      e.data.refresh();
-      e.data.focus();
-    });
-
-    // Set default example file to load.
-    if (!$.deparam.fragment()['load-bao']) {
-      window.location.hash = $.param.fragment(window.location.hash, 'load-bao=calc');
-    }
-
-    function loadBaoCode(filename) {
-      $.get('examples/' + filename + '.bao', function(data) {
-        baoEditor.getDoc().setValue(data);
-        baoEditor.focus();
-      });
-      $.get('examples/' + filename + '.html', function(data) {
-        htmlEditor.getDoc().setValue(data);
-      });
-    }
-    loadBaoCode($.deparam.fragment()['load-bao']);
-
-    $(window).bind("hashchange", function(e) {
-      loadBaoCode($.deparam.fragment()['load-bao']);
-    });
-
-    $('#run').click(function() {
-      // Load HTML
-      $('.result-area div').html(htmlEditor.getValue());
-      $('.result-area').show();
-      $('html,body').animate({scrollTop: $('.result-area').offset().top}, 'slow');
-      // Run bao
-      const bao = new Bao();
-      bao.parseString(baoEditor.getValue());
-      bao.run();
-    });
-  });
-</script>
+<!-- script for demo -->
+<script src="main.js"></script>
 </body>
 </html>
