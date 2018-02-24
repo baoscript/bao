@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -181,20 +181,29 @@ var Context = function () {
   /**
    * Create Bao context.
    */
-  function Context() {
+  function Context(baoStepFactory) {
     _classCallCheck(this, Context);
 
+    this.baoStepFactory_ = baoStepFactory;
     this.vars_ = new Map();
     this.steps_ = new Map();
   }
 
-  /**
-   * Get step by name.
-   * @param {string} name 
-   */
+  /** @return {function} BaoStep factory. */
 
 
   _createClass(Context, [{
+    key: 'getBaoStepFactory',
+    value: function getBaoStepFactory() {
+      return this.baoStepFactory_;
+    }
+
+    /**
+     * Get step by name.
+     * @param {string} name 
+     */
+
+  }, {
     key: 'getStep',
     value: function getStep(name) {
       return this.steps_.get(name);
@@ -345,88 +354,14 @@ module.exports = {
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var $ = __webpack_require__(0);
-var BaoStep = __webpack_require__(3);
-var Context = __webpack_require__(1).Context;
-
-var Bao = function () {
-  function Bao() {
-    _classCallCheck(this, Bao);
-
-    this.context_ = new Context();
-  }
-
-  /** Initialize bao with JSON data. */
-
-
-  _createClass(Bao, [{
-    key: 'parseString',
-    value: function parseString(json) {
-      var data = JSON.parse(json);
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var stepJson = _step.value;
-
-          this.context_.setStep(stepJson['name'], BaoStep.createBaoStep(this.context_, stepJson));
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-    }
-
-    /** Start bao flow. */
-
-  }, {
-    key: 'run',
-    value: function run() {
-      var current = this.context_.getStep('#begin');
-      current.run();
-    }
-  }]);
-
-  return Bao;
-}();
-
-module.exports = Bao;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var $ = __webpack_require__(0);
-var baoContext = __webpack_require__(1);
-var Context = baoContext.Context;
+var Context = __webpack_require__(1).Context;
 
 /** A base class for a step abstraction in bao. */
 
@@ -446,21 +381,15 @@ var BaoStep = function () {
     this.init_ = undefined;
     // Setters of this step
     this.set_ = new Map();
+    // BaoStep factory.
+    this.baoStepFactory_ = context.getBaoStepFactory();
   }
 
-  /**
-   * A factory method to create bao steps with correct subclasses.
-   * @param {Context} context
-   * @param {object} data
-   * @return {BaoStep}
-   */
+  /** Get step type. */
 
 
   _createClass(BaoStep, [{
     key: 'getType',
-
-
-    /** Get step type. */
     value: function getType() {
       return this.type_;
     }
@@ -487,7 +416,7 @@ var BaoStep = function () {
         // Set init step.
         if (data['init']) {
           // Anonymous step.
-          this.init_ = BaoStep.create(this.context_, data['init']);
+          this.init_ = this.baoStepFactory_(this.context_, data['init']);
         }
         // print, literal only.
         if (data['print'] !== undefined) {
@@ -583,48 +512,166 @@ var BaoStep = function () {
       }
       return null;
     }
-  }], [{
-    key: 'create',
-    value: function create(context, data) {
-      if (data['if']) {
-        var ifStep = new IfStep(context);
-        ifStep.parseJsonData(data);
-        return ifStep;
-      }
-      if (data['goto']) {
-        var gotoStep = new GotoStep(context);
-        gotoStep.parseJsonData(data);
-        return gotoStep;
-      }
-      if (data['next']) {
-        var actionStep = new ActionStep(context);
-        actionStep.parseJsonData(data);
-        return actionStep;
-      }
-      if (data['switch']) {
-        var switchStep = new SwitchStep(context);
-        switchStep.parseJsonData(data);
-        return switchStep;
-      }
-      var step = new BaoStep(context);
-      step.parseJsonData(data);
-      return step;
-    }
   }]);
 
   return BaoStep;
 }();
 
-/** A step that contains if clause. */
+module.exports = BaoStep;
 
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var $ = __webpack_require__(0);
+var BaoStep = __webpack_require__(4);
+var Context = __webpack_require__(1).Context;
+
+var Bao = function () {
+  function Bao() {
+    _classCallCheck(this, Bao);
+
+    this.context_ = new Context(BaoStep.createBaoStep);
+  }
+
+  /** Initialize bao with JSON data. */
+
+
+  _createClass(Bao, [{
+    key: 'parseString',
+    value: function parseString(json) {
+      var data = JSON.parse(json);
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var stepJson = _step.value;
+
+          this.context_.setStep(stepJson['name'], BaoStep.createBaoStep(this.context_, stepJson));
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return this;
+    }
+
+    /** Start bao flow. */
+
+  }, {
+    key: 'run',
+    value: function run() {
+      var current = this.context_.getStep('#begin');
+      current.run();
+    }
+  }]);
+
+  return Bao;
+}();
+
+// Only exports bao runner.
+
+
+module.exports = {
+  runBao: function runBao(json) {
+    new Bao().parseString(json).run();
+  }
+};
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $ = __webpack_require__(0);
+var Context = __webpack_require__(1).Context;
+var BaseStep = __webpack_require__(2);
+var IfStep = __webpack_require__(5);
+var SwitchStep = __webpack_require__(6);
+var GotoStep = __webpack_require__(7);
+var ActionStep = __webpack_require__(8);
+
+/**
+ * A factory method to create bao steps with correct subclasses.
+ * @param {Context} context
+ * @param {object} data
+ * @return {BaoStep}
+ */
+function createBaoStep(context, data) {
+  if (data['if']) {
+    var ifStep = new IfStep(context);
+    ifStep.parseJsonData(data);
+    return ifStep;
+  }
+  if (data['goto']) {
+    var gotoStep = new GotoStep(context);
+    gotoStep.parseJsonData(data);
+    return gotoStep;
+  }
+  if (data['next']) {
+    var actionStep = new ActionStep(context);
+    actionStep.parseJsonData(data);
+    return actionStep;
+  }
+  if (data['switch']) {
+    var switchStep = new SwitchStep(context);
+    switchStep.parseJsonData(data);
+    return switchStep;
+  }
+  var step = new BaseStep(context);
+  step.parseJsonData(data);
+  return step;
+}
+
+module.exports = {
+  // Export factory.
+  createBaoStep: createBaoStep
+};
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var $ = __webpack_require__(0);
+var baoContext = __webpack_require__(1);
+var Context = baoContext.Context;
+var BaoStep = __webpack_require__(2);
+
+/** A step that contains if clause. */
 
 var IfStep = function (_BaoStep) {
   _inherits(IfStep, _BaoStep);
 
-  function IfStep(context, name) {
+  function IfStep(context) {
     _classCallCheck(this, IfStep);
 
-    var _this = _possibleConstructorReturn(this, (IfStep.__proto__ || Object.getPrototypeOf(IfStep)).call(this, context, name));
+    var _this = _possibleConstructorReturn(this, (IfStep.__proto__ || Object.getPrototypeOf(IfStep)).call(this, context));
 
     _this.type_ = 'IfStep';
     _this.condition_ = undefined;
@@ -648,10 +695,10 @@ var IfStep = function (_BaoStep) {
         throw 'Invalid if step';
       }
       this.condition_ = data['if']['condition'];
-      this.thenStep_ = BaoStep.create(this.context_, data['if']['then']);
+      this.thenStep_ = this.baoStepFactory_(this.context_, data['if']['then']);
       // Optional else clause.
       if (data['if']['else']) {
-        this.elseStep_ = BaoStep.create(this.context_, data['if']['else']);
+        this.elseStep_ = this.baoStepFactory_(this.context_, data['if']['else']);
       }
     }
 
@@ -680,22 +727,44 @@ var IfStep = function (_BaoStep) {
   return IfStep;
 }(BaoStep);
 
+module.exports = IfStep;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var $ = __webpack_require__(0);
+var baoContext = __webpack_require__(1);
+var Context = baoContext.Context;
+var BaoStep = __webpack_require__(2);
+
 /** A step that contains switch clause. */
 
+var SwitchStep = function (_BaoStep) {
+  _inherits(SwitchStep, _BaoStep);
 
-var SwitchStep = function (_BaoStep2) {
-  _inherits(SwitchStep, _BaoStep2);
-
-  function SwitchStep(context, name) {
+  function SwitchStep(context) {
     _classCallCheck(this, SwitchStep);
 
-    var _this2 = _possibleConstructorReturn(this, (SwitchStep.__proto__ || Object.getPrototypeOf(SwitchStep)).call(this, context, name));
+    var _this = _possibleConstructorReturn(this, (SwitchStep.__proto__ || Object.getPrototypeOf(SwitchStep)).call(this, context));
 
-    _this2.type_ = 'SwitchStep';
-    _this2.expr_ = undefined;
-    _this2.cases_ = new Map();
-    _this2.defaultStep_ = undefined;
-    return _this2;
+    _this.type_ = 'SwitchStep';
+    _this.expr_ = undefined;
+    _this.cases_ = new Map();
+    _this.defaultStep_ = undefined;
+    return _this;
   }
 
   /**
@@ -713,37 +782,37 @@ var SwitchStep = function (_BaoStep2) {
         throw 'Invalid switch step';
       }
       this.expr_ = data['switch']['expr'];
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
       try {
-        for (var _iterator3 = data['switch']['cases'][Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var _step3$value = _slicedToArray(_step3.value, 2),
-              val = _step3$value[0],
-              clause = _step3$value[1];
+        for (var _iterator = data['switch']['cases'][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var _step$value = _slicedToArray(_step.value, 2),
+              val = _step$value[0],
+              clause = _step$value[1];
 
-          this.cases_.set(val, BaoStep.create(this.context_, clause));
+          this.cases_.set(val, this.baoStepFactory_(this.context_, clause));
         }
 
         // Optional default clause.
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError = true;
+        _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return) {
-            _iterator3.return();
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError) {
+            throw _iteratorError;
           }
         }
       }
 
       if (data['switch']['default']) {
-        this.defaultStep_ = BaoStep.create(this.context_, data['switch']['default']);
+        this.defaultStep_ = this.baoStepFactory_(this.context_, data['switch']['default']);
       }
     }
 
@@ -774,21 +843,40 @@ var SwitchStep = function (_BaoStep2) {
   return SwitchStep;
 }(BaoStep);
 
+module.exports = SwitchStep;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var $ = __webpack_require__(0);
+var Context = __webpack_require__(1).Context;
+var BaoStep = __webpack_require__(2);
+
 /** A step that contains goto clause. */
 
+var GotoStep = function (_BaoStep) {
+  _inherits(GotoStep, _BaoStep);
 
-var GotoStep = function (_BaoStep3) {
-  _inherits(GotoStep, _BaoStep3);
-
-  function GotoStep(context, name) {
+  function GotoStep(context) {
     _classCallCheck(this, GotoStep);
 
-    var _this3 = _possibleConstructorReturn(this, (GotoStep.__proto__ || Object.getPrototypeOf(GotoStep)).call(this, context, name));
+    var _this = _possibleConstructorReturn(this, (GotoStep.__proto__ || Object.getPrototypeOf(GotoStep)).call(this, context));
 
-    _this3.type_ = 'GotoStep';
+    _this.type_ = 'GotoStep';
     // The **name** of goto step.
-    _this3.goto_ = undefined;
-    return _this3;
+    _this.goto_ = undefined;
+    return _this;
   }
 
   /**
@@ -827,21 +915,42 @@ var GotoStep = function (_BaoStep3) {
   return GotoStep;
 }(BaoStep);
 
+module.exports = GotoStep;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var $ = __webpack_require__(0);
+var Context = __webpack_require__(1).Context;
+var BaoStep = __webpack_require__(2);
+
 /** A step that waits on UI click actions. */
 
+var ActionStep = function (_BaoStep) {
+  _inherits(ActionStep, _BaoStep);
 
-var ActionStep = function (_BaoStep4) {
-  _inherits(ActionStep, _BaoStep4);
-
-  function ActionStep(context, name) {
+  function ActionStep(context) {
     _classCallCheck(this, ActionStep);
 
-    var _this4 = _possibleConstructorReturn(this, (ActionStep.__proto__ || Object.getPrototypeOf(ActionStep)).call(this, context, name));
+    var _this = _possibleConstructorReturn(this, (ActionStep.__proto__ || Object.getPrototypeOf(ActionStep)).call(this, context));
 
-    _this4.type_ = 'ActionStep';
+    _this.type_ = 'ActionStep';
     // Next steps.
-    _this4.nextSteps_ = new Map();
-    return _this4;
+    _this.nextSteps_ = new Map();
+    return _this;
   }
 
   /**
@@ -861,7 +970,7 @@ var ActionStep = function (_BaoStep4) {
       if (data['next']) {
         for (var action in data['next']) {
           // Create an anonymous step.
-          var next = BaoStep.create(this.context_, data['next'][action]);
+          var next = this.baoStepFactory_(this.context_, data['next'][action]);
           this.nextSteps_.set(action, next);
         }
       }
@@ -877,29 +986,29 @@ var ActionStep = function (_BaoStep4) {
     value: function run() {
       _get(ActionStep.prototype.__proto__ || Object.getPrototypeOf(ActionStep.prototype), 'run', this).call(this);
       // Register click handler.
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
       try {
-        for (var _iterator4 = this.nextSteps_[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          var _step4$value = _slicedToArray(_step4.value, 2),
-              action = _step4$value[0],
-              next = _step4$value[1];
+        for (var _iterator = this.nextSteps_[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var _step$value = _slicedToArray(_step.value, 2),
+              action = _step$value[0],
+              next = _step$value[1];
 
           this.registerButton_(action, next);
         }
       } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _didIteratorError = true;
+        _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion4 && _iterator4.return) {
-            _iterator4.return();
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
           }
         } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
+          if (_didIteratorError) {
+            throw _iteratorError;
           }
         }
       }
@@ -929,10 +1038,7 @@ var ActionStep = function (_BaoStep4) {
   return ActionStep;
 }(BaoStep);
 
-module.exports = {
-  // Export factory.
-  createBaoStep: BaoStep.create
-};
+module.exports = ActionStep;
 
 /***/ })
 /******/ ]);
