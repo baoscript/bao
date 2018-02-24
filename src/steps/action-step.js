@@ -1,5 +1,5 @@
 const $ = require('jquery');
-const Context = require('../context').Context;
+const Context = require('../context');
 const BaoStep = require('./base-step');
 
 /** A step that waits on UI click actions. */

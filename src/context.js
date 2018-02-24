@@ -1,14 +1,5 @@
 const $ = require('jquery');
 
-/**
- * Eval an expression with context.
- * @param {Context} context 
- * @param {string} expr 
- */
-const evalWithContext = function(context, expr) {
-  return (new Function('with(this){return ' + expr + '}')).call(context.getVarContext());
-};
-
 class Variable {
   /**
    * Create a variable with name and type.
@@ -27,6 +18,9 @@ class Variable {
    * @param {anything} val
    */
   setVal(val) {
+    if (typeof val !== this.type_) {
+      throw 'Invalid ' + this.type_ + ' ' + val;
+    }
     this.val_ = val;
     this.updateDomElements_();
   }
@@ -144,7 +138,7 @@ class Context {
   setVar(name, val) {
     // We only eval expr here.
     if (typeof val === 'object' && val['expr']) {
-      this.setVar(name, evalWithContext(this, val['expr']));
+      this.setVar(name, this.eval(val['expr']));
     } else {
       // Deduce the type.
       this.maybeDeclareVar(name, typeof val);
@@ -160,14 +154,24 @@ class Context {
     return this.vars_.has(name);
   }
 
-  /** Return a js object with mapping of variable name to value. */
-  getVarContext() {
+  /**
+   * Return a js object with mapping of variable name to value.
+   * @private
+   */
+  getVarContext_() {
     const varContext = {};
     for (const [name, val] of this.vars_) {
       varContext[name] = val.getVal();
     }
     return varContext;
   }
+  /**
+   * Eval an expression in this context.
+   * @param {string} expr 
+   */
+  eval(expr) {
+    return (new Function('with(this){return ' + expr + '}')).call(this.getVarContext_());
+  };
 
   /** Update all variables with DOM elements. */
   sync() {
@@ -177,9 +181,4 @@ class Context {
   }
 }
 
-module.exports = {
-  // Export class Context.
-  Context: Context,
-  // Export eval.
-  evalWithContext: evalWithContext
-};
+module.exports = Context;

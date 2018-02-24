@@ -1,6 +1,5 @@
 const $ = require('jquery');
-const baoContext = require('../context');
-const Context = baoContext.Context;
+const Context = require('../context');
 const BaoStep = require('./base-step');
 
 /** A step that contains switch clause. */
@@ -44,7 +43,7 @@ class SwitchStep extends BaoStep {
     if (!this.expr_ || !this.cases_) {
       throw 'Invalid switch step';
     }
-    const exprVal = baoContext.evalWithContext(this.context_, this.expr_);
+    const exprVal = this.context_.eval(this.expr_);
     const clause = this.cases_.get(exprVal);
     if (clause) {
       return clause.run();
