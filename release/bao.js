@@ -93,15 +93,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var $ = __webpack_require__(0);
 
-/**
- * Eval an expression with context.
- * @param {Context} context 
- * @param {string} expr 
- */
-var evalWithContext = function evalWithContext(context, expr) {
-  return new Function('with(this){return ' + expr + '}').call(context.getVarContext());
-};
-
 var Variable = function () {
   /**
    * Create a variable with name and type.
@@ -126,6 +117,9 @@ var Variable = function () {
   _createClass(Variable, [{
     key: 'setVal',
     value: function setVal(val) {
+      if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) !== this.type_) {
+        throw 'Invalid ' + this.type_ + ' ' + val;
+      }
       this.val_ = val;
       this.updateDomElements_();
     }
@@ -276,7 +270,7 @@ var Context = function () {
     value: function setVar(name, val) {
       // We only eval expr here.
       if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) === 'object' && val['expr']) {
-        this.setVar(name, evalWithContext(this, val['expr']));
+        this.setVar(name, this.eval(val['expr']));
       } else {
         // Deduce the type.
         this.maybeDeclareVar(name, typeof val === 'undefined' ? 'undefined' : _typeof(val));
@@ -295,11 +289,14 @@ var Context = function () {
       return this.vars_.has(name);
     }
 
-    /** Return a js object with mapping of variable name to value. */
+    /**
+     * Return a js object with mapping of variable name to value.
+     * @private
+     */
 
   }, {
-    key: 'getVarContext',
-    value: function getVarContext() {
+    key: 'getVarContext_',
+    value: function getVarContext_() {
       var varContext = {};
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -330,11 +327,21 @@ var Context = function () {
 
       return varContext;
     }
-
-    /** Update all variables with DOM elements. */
+    /**
+     * Eval an expression in this context.
+     * @param {string} expr 
+     */
 
   }, {
+    key: 'eval',
+    value: function _eval(expr) {
+      return new Function('with(this){return ' + expr + '}').call(this.getVarContext_());
+    }
+  }, {
     key: 'sync',
+
+
+    /** Update all variables with DOM elements. */
     value: function sync() {
       var _iteratorNormalCompletion2 = true;
       var _didIteratorError2 = false;
@@ -368,12 +375,7 @@ var Context = function () {
   return Context;
 }();
 
-module.exports = {
-  // Export class Context.
-  Context: Context,
-  // Export eval.
-  evalWithContext: evalWithContext
-};
+module.exports = Context;
 
 /***/ }),
 /* 2 */
@@ -386,7 +388,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var $ = __webpack_require__(0);
-var Context = __webpack_require__(1).Context;
+var Context = __webpack_require__(1);
 
 /** A base class for a step abstraction in bao. */
 
@@ -533,7 +535,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var $ = __webpack_require__(0);
 var BaoStep = __webpack_require__(4);
-var Context = __webpack_require__(1).Context;
+var Context = __webpack_require__(1);
 
 var Bao = function () {
   function Bao() {
@@ -604,7 +606,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(0);
-var Context = __webpack_require__(1).Context;
+var Context = __webpack_require__(1);
 var BaseStep = __webpack_require__(2);
 var IfStep = __webpack_require__(5);
 var SwitchStep = __webpack_require__(6);
@@ -663,8 +665,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var $ = __webpack_require__(0);
-var baoContext = __webpack_require__(1);
-var Context = baoContext.Context;
+var Context = __webpack_require__(1);
 var BaoStep = __webpack_require__(2);
 
 /** A step that contains if clause. */
@@ -718,7 +719,7 @@ var IfStep = function (_BaoStep) {
       if (!this.condition_ || !this.thenStep_) {
         throw 'Invalid if step';
       }
-      if (baoContext.evalWithContext(this.context_, this.condition_)) {
+      if (this.context_.eval(this.condition_)) {
         return this.thenStep_.run();
       }
       if (this.elseStep_) {
@@ -832,7 +833,7 @@ var SwitchStep = function (_BaoStep) {
       if (!this.expr_ || !this.cases_) {
         throw 'Invalid switch step';
       }
-      var exprVal = baoContext.evalWithContext(this.context_, this.expr_);
+      var exprVal = this.context_.eval(this.expr_);
       var clause = this.cases_.get(exprVal);
       if (clause) {
         return clause.run();
@@ -864,7 +865,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var $ = __webpack_require__(0);
-var Context = __webpack_require__(1).Context;
+var Context = __webpack_require__(1);
 var BaoStep = __webpack_require__(2);
 
 /** A step that contains goto clause. */
@@ -938,7 +939,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var $ = __webpack_require__(0);
-var Context = __webpack_require__(1).Context;
+var Context = __webpack_require__(1);
 var BaoStep = __webpack_require__(2);
 
 /** A step that waits on UI click actions. */

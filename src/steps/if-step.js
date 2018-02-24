@@ -1,6 +1,5 @@
 const $ = require('jquery');
-const baoContext = require('../context');
-const Context = baoContext.Context;
+const Context = require('../context');
 const BaoStep = require('./base-step');
 
 /** A step that contains if clause. */
@@ -41,7 +40,7 @@ class IfStep extends BaoStep {
     if (!this.condition_ || !this.thenStep_) {
       throw 'Invalid if step';
     }
-    if (baoContext.evalWithContext(this.context_, this.condition_)) {
+    if (this.context_.eval(this.condition_)) {
       return this.thenStep_.run();
     }
     if (this.elseStep_) {

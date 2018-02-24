@@ -1,5 +1,5 @@
 const $ = require('jquery');
-const Context = require('../context').Context;
+const Context = require('../context');
 
 /** A base class for a step abstraction in bao. */
 class BaoStep {

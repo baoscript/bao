@@ -1,13 +1,13 @@
 const $ = require('jquery');
-const Context = require('./context').Context;
-const BaseStep = require('./step/base-step');
-const IfStep = require('./step/if-step');
-const SwitchStep = require('./step/switch-step');
-const GotoStep = require('./step/goto-step');
-const ActionStep = require('./step/action-step');
+const Context = require('./context');
+const BaseStep = require('./steps/base-step');
+const IfStep = require('./steps/if-step');
+const SwitchStep = require('./steps/switch-step');
+const GotoStep = require('./steps/goto-step');
+const ActionStep = require('./steps/action-step');
 
 /**
- * A factory method to create bao steps with correct subclasses.
+ * A factory method to create bao steps with appropriate subclasses.
  * @param {Context} context
  * @param {object} data
  * @return {BaoStep}

@@ -1,6 +1,6 @@
 const $ = require('jquery');
-const BaoStep = require('./step.js');
-const Context = require('./context.js').Context;
+const BaoStep = require('./step');
+const Context = require('./context');
 
 class Bao {
   constructor() {

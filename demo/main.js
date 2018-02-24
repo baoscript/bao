@@ -48,7 +48,6 @@ $(function() {
 
   // Handle all uncaught exceptions.
   window.addEventListener('error', function(e) {
-    console.log(e);
     createAlertBox(e.message);
   })
 
