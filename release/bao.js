@@ -614,7 +614,7 @@ var GotoStep = __webpack_require__(7);
 var ActionStep = __webpack_require__(8);
 
 /**
- * A factory method to create bao steps with correct subclasses.
+ * A factory method to create bao steps with appropriate subclasses.
  * @param {Context} context
  * @param {object} data
  * @return {BaoStep}
@@ -751,8 +751,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var $ = __webpack_require__(0);
-var baoContext = __webpack_require__(1);
-var Context = baoContext.Context;
+var Context = __webpack_require__(1);
 var BaoStep = __webpack_require__(2);
 
 /** A step that contains switch clause. */

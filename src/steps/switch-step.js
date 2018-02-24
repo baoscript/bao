@@ -1,6 +1,5 @@
 const $ = require('jquery');
-const baoContext = require('../context');
-const Context = baoContext.Context;
+const Context = require('../context');
 const BaoStep = require('./base-step');
 
 /** A step that contains switch clause. */
