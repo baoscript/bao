@@ -85,8 +85,6 @@ $(function() {
     $('.result-area').removeClass('d-none');
     $('html,body').animate({scrollTop: $('.result-area').offset().top}, 'slow');
     // Run bao
-    const bao = new Bao();
-    bao.parseString(baoEditor.getValue());
-    bao.run();
+    Bao.runBao(baoEditor.getValue());
   });
 });

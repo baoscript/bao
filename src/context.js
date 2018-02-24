@@ -70,11 +70,16 @@ class Context {
   /**
    * Create Bao context.
    */
-  constructor() {
+  constructor(baoStepFactory) {
+    this.baoStepFactory_ = baoStepFactory;
     this.vars_ = new Map();
     this.steps_ = new Map();
   }
 
+  /** @return {function} BaoStep factory. */
+  getBaoStepFactory() {
+    return this.baoStepFactory_;
+  }
 
   /**
    * Get step by name.

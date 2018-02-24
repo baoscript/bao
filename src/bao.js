@@ -4,7 +4,7 @@ const Context = require('./context.js').Context;
 
 class Bao {
   constructor() {
-    this.context_ = new Context();
+    this.context_ = new Context(BaoStep.createBaoStep);
   }
 
   /** Initialize bao with JSON data. */
@@ -14,6 +14,7 @@ class Bao {
       this.context_.setStep(stepJson['name'],
                             BaoStep.createBaoStep(this.context_, stepJson));
     }
+    return this;
   }
 
   /** Start bao flow. */
@@ -23,4 +24,9 @@ class Bao {
   }
 }
 
-module.exports = Bao;
+// Only exports bao runner.
+module.exports = {
+  runBao: function(json) {
+    new Bao().parseString(json).run();
+  }
+};
