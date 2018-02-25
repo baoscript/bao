@@ -1,80 +1,5 @@
 const $ = require('jquery');
-
-class Variable {
-  /**
-   * Create a variable with name and type.
-   * @param {string} name 
-   * @param {string} type one of number, string and boolean.
-   */
-  constructor(name, type) {
-    this.name_ = name;
-    this.val_ = undefined;
-    this.type_ = type;
-    this.updateDomElements_();
-  }
-
-  /**
-   * Set the value of this variable.
-   * @param {anything} val
-   */
-  setVal(val) {
-    if (typeof val !== this.type_) {
-      throw 'Invalid ' + this.type_ + ' ' + val;
-    }
-    this.val_ = val;
-    this.updateDomElements_();
-  }
-
-  /**
-   * Get the value of variable.
-   */
-  getVal() {
-    return this.val_;
-  }
-
-  /** 
-   * Update the value of the linked DOM element with this variable.
-   * @private
-   */
-  updateDomElements_() {
-    const el = $('[data-bao-target="' + this.name_ + '"]');
-    el.val(this.val_);
-  }
-
-  /**
-   * Update the value with the linked DOM element.
-   */
-  sync() {
-    const val = $('[data-bao-target="' + this.name_ + '"]').val();
-    switch (this.type_) {
-      case 'number':
-        this.val_ = Number(val);
-        if (isNaN(this.val_)) {
-          throw 'Invalid number ' + val;
-        }
-        break;
-      case 'string':
-        this.val_ = val;
-        break;
-      case 'boolean':
-        switch (val) {
-          case 1:
-          case 'true':
-            this.val_ = true;
-            break;
-          case 0:
-          case 'false':
-            this.val_ = false;
-            break;
-          default:
-            throw 'A boolean value must be either true or false (' + val + ')';
-        }
-        break;
-      default:
-        throw 'Unsupported variable type';
-    }
-  }
-}
+const Variable = require('./variable');
 
 class Context {
   /**
@@ -116,7 +41,7 @@ class Context {
    */
   maybeDeclareVar(name, type) {
     if (!this.hasVar(name)) {
-      this.vars_.set(name, new Variable(name, type));
+      this.vars_.set(name, Variable.createVariable(name, type));
     }
   }
 

@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -92,100 +92,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var $ = __webpack_require__(0);
-
-var Variable = function () {
-  /**
-   * Create a variable with name and type.
-   * @param {string} name 
-   * @param {string} type one of number, string and boolean.
-   */
-  function Variable(name, type) {
-    _classCallCheck(this, Variable);
-
-    this.name_ = name;
-    this.val_ = undefined;
-    this.type_ = type;
-    this.updateDomElements_();
-  }
-
-  /**
-   * Set the value of this variable.
-   * @param {anything} val
-   */
-
-
-  _createClass(Variable, [{
-    key: 'setVal',
-    value: function setVal(val) {
-      if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) !== this.type_) {
-        throw 'Invalid ' + this.type_ + ' ' + val;
-      }
-      this.val_ = val;
-      this.updateDomElements_();
-    }
-
-    /**
-     * Get the value of variable.
-     */
-
-  }, {
-    key: 'getVal',
-    value: function getVal() {
-      return this.val_;
-    }
-
-    /** 
-     * Update the value of the linked DOM element with this variable.
-     * @private
-     */
-
-  }, {
-    key: 'updateDomElements_',
-    value: function updateDomElements_() {
-      var el = $('[data-bao-target="' + this.name_ + '"]');
-      el.val(this.val_);
-    }
-
-    /**
-     * Update the value with the linked DOM element.
-     */
-
-  }, {
-    key: 'sync',
-    value: function sync() {
-      var val = $('[data-bao-target="' + this.name_ + '"]').val();
-      switch (this.type_) {
-        case 'number':
-          this.val_ = Number(val);
-          if (isNaN(this.val_)) {
-            throw 'Invalid number ' + val;
-          }
-          break;
-        case 'string':
-          this.val_ = val;
-          break;
-        case 'boolean':
-          switch (val) {
-            case 1:
-            case 'true':
-              this.val_ = true;
-              break;
-            case 0:
-            case 'false':
-              this.val_ = false;
-              break;
-            default:
-              throw 'A boolean value must be either true or false (' + val + ')';
-          }
-          break;
-        default:
-          throw 'Unsupported variable type';
-      }
-    }
-  }]);
-
-  return Variable;
-}();
+var Variable = __webpack_require__(6);
 
 var Context = function () {
   /**
@@ -242,7 +149,7 @@ var Context = function () {
     key: 'maybeDeclareVar',
     value: function maybeDeclareVar(name, type) {
       if (!this.hasVar(name)) {
-        this.vars_.set(name, new Variable(name, type));
+        this.vars_.set(name, Variable.createVariable(name, type));
       }
     }
 
@@ -529,12 +436,103 @@ module.exports = BaoStep;
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var $ = __webpack_require__(0);
-var BaoStep = __webpack_require__(4);
+
+var Variable = function () {
+  /**
+   * Create a variable with name and type.
+   * @param {string} name 
+   * @param {string} type one of number, string and boolean.
+   */
+  function Variable(name, type) {
+    _classCallCheck(this, Variable);
+
+    this.name_ = name;
+    this.val_ = undefined;
+    this.type_ = type;
+    this.updateDomElements_();
+  }
+
+  /**
+   * Set the value of this variable.
+   * @param {anything} val
+   */
+
+
+  _createClass(Variable, [{
+    key: 'setVal',
+    value: function setVal(val) {
+      if ((typeof val === 'undefined' ? 'undefined' : _typeof(val)) !== this.type_) {
+        throw 'Invalid ' + this.type_ + ' ' + val;
+      }
+      this.val_ = val;
+      this.updateDomElements_();
+    }
+
+    /**
+     * Get the value of variable.
+     */
+
+  }, {
+    key: 'getVal',
+    value: function getVal() {
+      return this.val_;
+    }
+
+    /** 
+     * Update the value of the linked DOM element with this variable.
+     * @private
+     */
+
+  }, {
+    key: 'updateDomElements_',
+    value: function updateDomElements_() {
+      $('[data-bao-target="' + this.name_ + '"]').val(this.val_);
+    }
+
+    /**
+     * Update the value with the linked DOM element.
+     */
+
+  }, {
+    key: 'sync',
+    value: function sync() {
+      var val = $('[data-bao-target="' + this.name_ + '"]').val();
+      this.val_ = this.parseString(val);
+    }
+
+    /**
+     * Converts string to the type.
+     * A base method to be implemented by subclasses.
+     * @param {string} str 
+     */
+
+  }, {
+    key: 'parseString',
+    value: function parseString(str) {}
+  }]);
+
+  return Variable;
+}();
+
+module.exports = Variable;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var $ = __webpack_require__(0);
+var BaoStep = __webpack_require__(5);
 var Context = __webpack_require__(1);
 
 var Bao = function () {
@@ -602,16 +600,16 @@ module.exports = {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(0);
 var Context = __webpack_require__(1);
 var BaseStep = __webpack_require__(2);
-var IfStep = __webpack_require__(5);
-var SwitchStep = __webpack_require__(6);
-var GotoStep = __webpack_require__(7);
-var ActionStep = __webpack_require__(8);
+var IfStep = __webpack_require__(10);
+var SwitchStep = __webpack_require__(11);
+var GotoStep = __webpack_require__(12);
+var ActionStep = __webpack_require__(13);
 
 /**
  * A factory method to create bao steps with appropriate subclasses.
@@ -651,7 +649,189 @@ module.exports = {
 };
 
 /***/ }),
-/* 5 */
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $ = __webpack_require__(0);
+var Variable = __webpack_require__(3);
+var NumberVariable = __webpack_require__(7);
+var StringVariable = __webpack_require__(8);
+var BooleanVariable = __webpack_require__(9);
+/**
+ * A factory to create a variable with name and type.
+ * @param {string} name 
+ * @param {string} type one of number, string and boolean.
+ * @return {Variable}
+ */
+function createVariable(name, type) {
+  switch (type) {
+    case 'number':
+      return new NumberVariable(name);
+    case 'string':
+      return new StringVariable(name);
+    case 'boolean':
+      return new BoolVariable(name);
+    default:
+      throw 'Unsupported type ' + type;
+  }
+}
+
+module.exports = {
+  createVariable: createVariable
+};
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Variable = __webpack_require__(3);
+
+var NumberVariable = function (_Variable) {
+  _inherits(NumberVariable, _Variable);
+
+  /**
+   * Create a number variable.
+   * @param {string} name 
+   */
+  function NumberVariable(name) {
+    _classCallCheck(this, NumberVariable);
+
+    return _possibleConstructorReturn(this, (NumberVariable.__proto__ || Object.getPrototypeOf(NumberVariable)).call(this, name, 'number'));
+  }
+
+  /**
+   * Convert string to number.
+   * @param {string} str
+   * @override
+   */
+
+
+  _createClass(NumberVariable, [{
+    key: 'parseString',
+    value: function parseString(str) {
+      val = Number(str);
+      if (isNaN(val)) {
+        throw 'Invalid number ' + str;
+      }
+      return val;
+    }
+  }]);
+
+  return NumberVariable;
+}(Variable);
+
+module.exports = NumberVariable;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Variable = __webpack_require__(3);
+
+var StringVariable = function (_Variable) {
+  _inherits(StringVariable, _Variable);
+
+  /**
+   * Create a string variable.
+   * @param {string} name 
+   */
+  function StringVariable(name) {
+    _classCallCheck(this, StringVariable);
+
+    return _possibleConstructorReturn(this, (StringVariable.__proto__ || Object.getPrototypeOf(StringVariable)).call(this, name, 'string'));
+  }
+
+  /**
+   * @param {string} str
+   * @override
+   */
+
+
+  _createClass(StringVariable, [{
+    key: 'parseString',
+    value: function parseString(str) {
+      return str;
+    }
+  }]);
+
+  return StringVariable;
+}(Variable);
+
+module.exports = StringVariable;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Variable = __webpack_require__(3);
+
+var BooleanVariable = function (_Variable) {
+  _inherits(BooleanVariable, _Variable);
+
+  /**
+   * Create a boolean variable.
+   * @param {string} name 
+   */
+  function BooleanVariable(name) {
+    _classCallCheck(this, BooleanVariable);
+
+    return _possibleConstructorReturn(this, (BooleanVariable.__proto__ || Object.getPrototypeOf(BooleanVariable)).call(this, name, 'boolean'));
+  }
+
+  /**
+   * Convert '0', '1', 'true', 'false' to boolean.
+   * @param {string} str
+   * @override
+   */
+
+
+  _createClass(BooleanVariable, [{
+    key: 'parseString',
+    value: function parseString(str) {
+      switch (str) {
+        case '1':
+        case 'true':
+          return true;
+        case '0':
+        case 'false':
+          return false;
+        default:
+          throw 'A boolean value must be either true or false (' + str + ')';
+      }
+    }
+  }]);
+
+  return BooleanVariable;
+}(Variable);
+
+module.exports = BooleanVariable;
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -735,7 +915,7 @@ var IfStep = function (_BaoStep) {
 module.exports = IfStep;
 
 /***/ }),
-/* 6 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -850,7 +1030,7 @@ var SwitchStep = function (_BaoStep) {
 module.exports = SwitchStep;
 
 /***/ }),
-/* 7 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -922,7 +1102,7 @@ var GotoStep = function (_BaoStep) {
 module.exports = GotoStep;
 
 /***/ }),
-/* 8 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
