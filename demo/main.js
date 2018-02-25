@@ -78,9 +78,13 @@ $(function() {
     window.location.hash = $.param.fragment(window.location.hash, 'load-bao=' + $('#file-name-input').val());
   });
 
-  $.getJSON('examples/examples.json', function(data) {
+  $.getJSON('https://api.github.com/repos/baoscript/bao/contents/demo/examples/', function(data) {
     $('#file-name-input').autocomplete({
-      source: data
+      source: data.map(e => e['name'])
+                  .map(e => e.replace(/(.*)\.(.*?)$/, '$1'))
+                  .filter((e, i, arr) => {
+                    return arr.indexOf(e) == i;
+                  })
     });
   });
 
