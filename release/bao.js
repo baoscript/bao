@@ -7,7 +7,7 @@
 		exports["Bao"] = factory(require("jQuery"));
 	else
 		root["Bao"] = factory(root["jQuery"]);
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_0__) {
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_3__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -75,12 +75,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
-
-/***/ }),
-/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -91,7 +85,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $ = __webpack_require__(0);
 var Variable = __webpack_require__(6);
 
 var Context = function () {
@@ -285,7 +278,7 @@ var Context = function () {
 module.exports = Context;
 
 /***/ }),
-/* 2 */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
@@ -294,8 +287,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $ = __webpack_require__(0);
-var Context = __webpack_require__(1);
+var $ = __webpack_require__(3);
+var Context = __webpack_require__(0);
 
 /** A base class for a step abstraction in bao. */
 
@@ -433,7 +426,7 @@ var BaoStep = function () {
 module.exports = BaoStep;
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -442,7 +435,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $ = __webpack_require__(0);
+var $ = __webpack_require__(3);
+
+/**
+ * A base class for bao variable implemented by specific types.
+ */
 
 var Variable = function () {
   /**
@@ -495,7 +492,7 @@ var Variable = function () {
   }, {
     key: 'updateDomElements_',
     value: function updateDomElements_() {
-      $('[data-bao-target="' + this.name_ + '"]').val(this.val_);
+      $('[data-bao-target="' + this.name_ + '"]').prop('placeholder', this.name_).val(this.val_);
     }
 
     /**
@@ -528,6 +525,12 @@ var Variable = function () {
 module.exports = Variable;
 
 /***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
+
+/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -535,9 +538,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $ = __webpack_require__(0);
 var BaoStep = __webpack_require__(5);
-var Context = __webpack_require__(1);
+var Context = __webpack_require__(0);
 
 var Bao = function () {
   function Bao() {
@@ -607,9 +609,8 @@ module.exports = {
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $ = __webpack_require__(0);
-var Context = __webpack_require__(1);
-var BaseStep = __webpack_require__(2);
+var Context = __webpack_require__(0);
+var BaseStep = __webpack_require__(1);
 var IfStep = __webpack_require__(10);
 var SwitchStep = __webpack_require__(11);
 var GotoStep = __webpack_require__(12);
@@ -656,8 +657,7 @@ module.exports = {
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $ = __webpack_require__(0);
-var Variable = __webpack_require__(3);
+var Variable = __webpack_require__(2);
 var NumberVariable = __webpack_require__(7);
 var StringVariable = __webpack_require__(8);
 var BooleanVariable = __webpack_require__(9);
@@ -696,7 +696,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Variable = __webpack_require__(3);
+var Variable = __webpack_require__(2);
 
 var NumberVariable = function (_Variable) {
   _inherits(NumberVariable, _Variable);
@@ -751,7 +751,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Variable = __webpack_require__(3);
+var Variable = __webpack_require__(2);
 
 var StringVariable = function (_Variable) {
   _inherits(StringVariable, _Variable);
@@ -796,7 +796,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Variable = __webpack_require__(3);
+var Variable = __webpack_require__(2);
 
 var BooleanVariable = function (_Variable) {
   _inherits(BooleanVariable, _Variable);
@@ -853,9 +853,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var $ = __webpack_require__(0);
-var Context = __webpack_require__(1);
-var BaoStep = __webpack_require__(2);
+var Context = __webpack_require__(0);
+var BaoStep = __webpack_require__(1);
 
 /** A step that contains if clause. */
 
@@ -939,9 +938,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var $ = __webpack_require__(0);
-var Context = __webpack_require__(1);
-var BaoStep = __webpack_require__(2);
+var Context = __webpack_require__(0);
+var BaoStep = __webpack_require__(1);
 
 /** A step that contains switch clause. */
 
@@ -1052,9 +1050,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var $ = __webpack_require__(0);
-var Context = __webpack_require__(1);
-var BaoStep = __webpack_require__(2);
+var Context = __webpack_require__(0);
+var BaoStep = __webpack_require__(1);
 
 /** A step that contains goto clause. */
 
@@ -1126,9 +1123,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var $ = __webpack_require__(0);
-var Context = __webpack_require__(1);
-var BaoStep = __webpack_require__(2);
+var $ = __webpack_require__(3);
+var Context = __webpack_require__(0);
+var BaoStep = __webpack_require__(1);
 
 /** A step that waits on UI click actions. */
 
@@ -1189,7 +1186,12 @@ var ActionStep = function (_BaoStep) {
               action = _step$value[0],
               next = _step$value[1];
 
-          this.registerButton_(action, next);
+          $('[data-bao-action="' + action + '"]').prop('disabled', false).click([this.context_, next], function (e) {
+            var context = e.data[0];
+            context.sync();
+            var next = e.data[1];
+            next.run();
+          });
         }
       } catch (err) {
         _didIteratorError = true;
@@ -1207,24 +1209,6 @@ var ActionStep = function (_BaoStep) {
       }
 
       return null;
-    }
-
-    /**
-     * Register click handler for next steps.
-     * @param {string} action 
-     * @param {BaoStep} next 
-     * @private
-     */
-
-  }, {
-    key: 'registerButton_',
-    value: function registerButton_(action, next) {
-      $('[data-bao-action="' + action + '"]').prop('disabled', false).click([this.context_, next], function (e) {
-        var context = e.data[0];
-        context.sync();
-        var next = e.data[1];
-        next.run();
-      });
     }
   }]);
 

@@ -39,26 +39,16 @@ class ActionStep extends BaoStep {
     super.run();
     // Register click handler.
     for (const [action, next] of this.nextSteps_) {
-      this.registerButton_(action, next);
+      $('[data-bao-action="' + action + '"]')
+          .prop('disabled', false)
+          .click([this.context_, next], function(e) {
+            const context = e.data[0];
+            context.sync();
+            const next = e.data[1];
+            next.run();
+          });
     }
     return null;
-  }
-
-  /**
-   * Register click handler for next steps.
-   * @param {string} action 
-   * @param {BaoStep} next 
-   * @private
-   */
-  registerButton_(action, next) {
-    $('[data-bao-action="' + action + '"]')
-        .prop('disabled', false)
-        .click([this.context_, next], function(e) {
-          const context = e.data[0];
-          context.sync();
-          const next = e.data[1];
-          next.run();
-        });
   }
 }
 

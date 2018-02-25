@@ -1,4 +1,3 @@
-const $ = require('jquery');
 const Variable = require('./variable');
 
 class Context {

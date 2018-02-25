@@ -1,4 +1,3 @@
-const $ = require('jquery');
 const Context = require('./context');
 const BaseStep = require('./steps/base-step');
 const IfStep = require('./steps/if-step');

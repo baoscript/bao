@@ -42,7 +42,9 @@ class Variable {
    * @private
    */
   updateDomElements_() {
-    $('[data-bao-target="' + this.name_ + '"]').val(this.val_);
+    $('[data-bao-target="' + this.name_ + '"]')
+      .prop('placeholder', this.name_)
+      .val(this.val_);
   }
 
   /**
