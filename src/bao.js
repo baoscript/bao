@@ -1,4 +1,3 @@
-const $ = require('jquery');
 const BaoStep = require('./step');
 const Context = require('./context');
 

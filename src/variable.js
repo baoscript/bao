@@ -1,4 +1,3 @@
-const $ = require('jquery');
 const Variable = require('./types/base-type');
 const NumberVariable = require('./types/number-type');
 const StringVariable = require('./types/string-type');
