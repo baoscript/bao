@@ -447,6 +447,8 @@ var $ = __webpack_require__(0);
 var Variable = function () {
   /**
    * Create a variable with name and type.
+   * Do not use this contructor directly. Instead use the factory function
+   * createVariable() in variable.js.
    * @param {string} name 
    * @param {string} type one of number, string and boolean.
    */
@@ -515,7 +517,9 @@ var Variable = function () {
 
   }, {
     key: 'parseString',
-    value: function parseString(str) {}
+    value: function parseString(str) {
+      throw 'This method is not implemented';
+    }
   }]);
 
   return Variable;
@@ -709,7 +713,8 @@ var NumberVariable = function (_Variable) {
 
   /**
    * Convert string to number.
-   * @param {string} str
+   * @param {string} str e.g. '43.250', '250', 43e250', '0b1101', '0x1f',
+   *                          'NaN', 'Infinity'
    * @override
    */
 
@@ -717,7 +722,11 @@ var NumberVariable = function (_Variable) {
   _createClass(NumberVariable, [{
     key: 'parseString',
     value: function parseString(str) {
+      if (str === 'NaN') {
+        return NaN;
+      }
       val = Number(str);
+      // Unable to parse.
       if (isNaN(val)) {
         throw 'Invalid number ' + str;
       }

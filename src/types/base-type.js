@@ -1,8 +1,13 @@
 const $ = require('jquery');
 
+/**
+ * A base class for bao variable implemented by specific types.
+ */
 class Variable {
   /**
    * Create a variable with name and type.
+   * Do not use this contructor directly. Instead use the factory function
+   * createVariable() in variable.js.
    * @param {string} name 
    * @param {string} type one of number, string and boolean.
    */
@@ -53,7 +58,9 @@ class Variable {
    * A base method to be implemented by subclasses.
    * @param {string} str 
    */
-  parseString(str) {}
+  parseString(str) {
+    throw 'This method is not implemented';
+  }
 }
 
 module.exports = Variable;
