@@ -87,9 +87,6 @@ $(function() {
   $('#run').click(function() {
     // Load html
     $('.result-area div').html(htmlEditor.getValue());
-    $('input[data-bao-target]').prop('placeholder', function() {
-      return $(this).attr('data-bao-target');
-    });
     // Run bao
     Bao.runBao(baoEditor.getValue());
     // Show result area
