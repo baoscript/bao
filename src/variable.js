@@ -6,7 +6,7 @@ const ArrayVariable = require('./types/array-type');
 /**
  * A factory to create a variable with name and type.
  * @param {string} name 
- * @param {string} type one of number, string and boolean.
+ * @param {string} type one of number, string, boolean and array.
  * @return {Variable}
  */
 function createVariable(name, type) {
