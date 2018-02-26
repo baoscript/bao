@@ -23,7 +23,8 @@
   },
   "homepage": "http://www.baoscript.org",
   "dependencies": {
-    "jquery": "^3.3.1"
+    "jquery": "^3.3.1",
+    "raphael": "^2.2.7"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

@@ -1,5 +1,6 @@
 const BaoStep = require('./step');
 const Context = require('./context');
+const BaoViz = require('./flowchart/bao-viz');
 
 class Bao {
   constructor() {
@@ -23,9 +24,16 @@ class Bao {
   }
 }
 
+
+function baoViz(container) {
+  const viz = new BaoViz(container);
+  viz.render();
+}
+
 // Only exports bao runner.
 module.exports = {
   runBao: function(json) {
     new Bao().parseString(json).run();
-  }
+  },
+  baoViz: baoViz
 };

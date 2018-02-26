@@ -32,6 +32,13 @@ $(function() {
     e.data.refresh();
     e.data.focus();
   });
+  $('#code-area-tabs>li.nav-item>a[href="#flowchart"]').click(function(e) {
+    e.preventDefault();
+    $(this).tab('show');
+    $('#flowchart').empty();
+    Bao.baoViz('flowchart');
+  });
+
 
   // Set default example file to load.
   if (!$.deparam.fragment()['load-bao']) {
