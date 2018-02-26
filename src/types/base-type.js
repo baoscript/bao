@@ -1,5 +1,12 @@
 const $ = require('jquery');
 
+function getType(e) {
+  if (Array.isArray(e)) {
+    return 'array';
+  }
+  return typeof e;
+}
+
 /**
  * A base class for bao variable implemented by specific types.
  */
@@ -23,7 +30,7 @@ class Variable {
    * @param {anything} val
    */
   setVal(val) {
-    if (typeof val !== this.type_) {
+    if (getType(val) !== this.type_) {
       throw 'Invalid ' + this.type_ + ' ' + val;
     }
     this.val_ = val;
@@ -44,7 +51,7 @@ class Variable {
   updateDomElements_() {
     $('[data-bao-target="' + this.name_ + '"]')
       .prop('placeholder', this.name_)
-      .val(this.val_);
+      .val(this.toString());
   }
 
   /**
@@ -52,7 +59,9 @@ class Variable {
    */
   sync() {
     const val = $('[data-bao-target="' + this.name_ + '"]').val();
-    this.val_ = this.parseString(val);
+    if (val !== undefined) {
+      this.val_ = this.parseString(val);
+    }
   }
 
   /**
@@ -62,6 +71,11 @@ class Variable {
    */
   parseString(str) {
     throw 'This method is not implemented';
+  }
+
+  /** Convert the variable to string */
+  toString() {
+    return this.val_ && this.val_.toString();
   }
 }
 
